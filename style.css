@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+
+html { scroll-behavior: smooth; }
+body { font-family: 'Poppins', sans-serif; }
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+}
+
+.hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Animasi Tombol WA */
+@keyframes pulse-ring { 
+    0% { transform: scale(0.8); opacity: 0.8; } 
+    100% { transform: scale(1.4); opacity: 0; } 
+}
+.pulse-btn::before {
+    content: ''; position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    border-radius: 50%; border: 2px solid #22c55e; 
+    animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #2bb4ab; border-radius: 10px; }

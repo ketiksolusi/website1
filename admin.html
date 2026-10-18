@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Ketik Solusi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>tailwind.config = { theme: { extend: { colors: { navy: '#1e3a5f', teal: '#2bb4ab', orange: '#ff8c00' } } } }</script>
+</head>
+<body class="bg-gray-100 font-sans flex h-screen overflow-hidden">
+
+    <!-- Sidebar Admin -->
+    <aside class="w-64 bg-navy text-white flex flex-col hidden md:flex">
+        <div class="p-6 text-center border-b border-gray-700">
+            <h2 class="text-2xl font-bold text-orange">Ketik<span class="text-teal">Solusi</span></h2>
+            <p class="text-xs text-gray-400">Admin Dashboard</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="#" class="flex items-center gap-3 bg-teal text-white p-3 rounded-lg font-bold"><i class="fa-solid fa-chart-pie"></i> Ringkasan</a>
+            <a href="#" class="flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-lg transition"><i class="fa-solid fa-cart-shopping"></i> Kelola Pesanan <span class="ml-auto bg-orange text-white text-xs px-2 py-1 rounded-full">3</span></a>
+            <a href="#" class="flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-lg transition"><i class="fa-solid fa-comments"></i> In-App Chat <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">1</span></a>
+            <a href="#" class="flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-lg transition"><i class="fa-solid fa-users"></i> Data Pelanggan</a>
+        </nav>
+        <div class="p-4 border-t border-gray-700">
+            <a href="index.html" class="flex items-center gap-3 text-gray-400 hover:text-white transition"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar</a>
+        </div>
+    </aside>
+
+    <!-- Konten Utama -->
+    <main class="flex-1 flex flex-col h-full overflow-y-auto">
+        <header class="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
+            <h1 class="text-xl font-bold text-navy">Ringkasan Hari Ini</h1>
+            <div class="flex items-center gap-4">
+                <i class="fa-solid fa-bell text-gray-400 text-xl cursor-pointer"></i>
+                <div class="w-10 h-10 bg-orange rounded-full flex items-center justify-center text-white font-bold shadow-md">AD</div>
+            </div>
+        </header>
+
+        <div class="p-6 space-y-6">
+            <!-- Kartu Statistik -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-teal flex items-center justify-between">
+                    <div><p class="text-sm text-gray-500 font-bold">Pesanan Aktif</p><h3 class="text-3xl font-extrabold text-navy">12</h3></div>
+                    <i class="fa-solid fa-list-check text-4xl text-teal opacity-50"></i>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange flex items-center justify-between">
+                    <div><p class="text-sm text-gray-500 font-bold">Menunggu Pembayaran</p><h3 class="text-3xl font-extrabold text-navy">3</h3></div>
+                    <i class="fa-solid fa-wallet text-4xl text-orange opacity-50"></i>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500 flex items-center justify-between">
+                    <div><p class="text-sm text-gray-500 font-bold">Total Pendapatan</p><h3 class="text-2xl font-extrabold text-navy">Rp 1.450K</h3></div>
+                    <i class="fa-solid fa-money-bill-wave text-4xl text-green-500 opacity-50"></i>
+                </div>
+            </div>
+
+            <!-- Tabel Pesanan (Database Mockup) -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+                <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
+                    <h2 class="font-bold text-navy">Pesanan Masuk (Real-time)</h2>
+                    <button class="bg-teal text-white text-sm px-3 py-1 rounded hover:bg-teal-600 transition"><i class="fa-solid fa-rotate"></i> Refresh</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100 text-gray-600 text-sm">
+                            <tr>
+                                <th class="p-4">ID Transaksi</th>
+                                <th class="p-4">Klien</th>
+                                <th class="p-4">Layanan</th>
+                                <th class="p-4">Deadline</th>
+                                <th class="p-4">Status Database</th>
+                                <th class="p-4">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm text-gray-700">
+                            <!-- Baris 1 -->
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-4 font-bold text-navy">#TRX-001</td>
+                                <td class="p-4">Ahmad Z.</td>
+                                <td class="p-4">Koding Web PHP</td>
+                                <td class="p-4 text-red-500 font-semibold">Besok, 23:59</td>
+                                <td class="p-4"><span class="bg-orange text-white px-2 py-1 rounded text-xs">Sedang Dikerjakan</span></td>
+                                <td class="p-4"><button class="text-teal hover:underline font-bold">Update Status</button></td>
+                            </tr>
+                            <!-- Baris 2 -->
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-4 font-bold text-navy">#TRX-002</td>
+                                <td class="p-4">Rina M.</td>
+                                <td class="p-4">Makalah Sejarah</td>
+                                <td class="p-4">15 Nov 2026</td>
+                                <td class="p-4"><span class="bg-gray-500 text-white px-2 py-1 rounded text-xs">Menunggu Konfirmasi</span></td>
+                                <td class="p-4"><button class="text-teal hover:underline font-bold">Terima Order</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

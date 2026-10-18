@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Order - Ketik Solusi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script>tailwind.config = { theme: { extend: { colors: { navy: '#1e3a5f', teal: '#2bb4ab', orange: '#ff8c00' } } } }</script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen py-10 px-4 flex justify-center items-center">
+
+    <div class="bg-white p-8 md:p-10 rounded-3xl shadow-xl w-full max-w-3xl border-t-8 border-teal relative">
+        <a href="index.html" class="absolute top-6 left-6 text-gray-400 hover:text-navy"><i class="fa-solid fa-arrow-left text-xl"></i></a>
+        
+        <div class="text-center mb-8 mt-4">
+            <h2 class="text-3xl font-extrabold text-navy">Formulir Pesanan</h2>
+            <p class="text-sm text-gray-500 mt-2">Data ini akan otomatis dikirim ke WhatsApp Admin (0851-4396-7392)</p>
+        </div>
+        
+        <form id="waForm" class="space-y-6">
+            <div>
+                <label class="block text-sm font-bold text-navy mb-2">Nama Pemesan</label>
+                <input type="text" id="waName" placeholder="Nama Anda..." class="w-full border-2 border-gray-200 p-3.5 rounded-xl focus:border-teal focus:ring-0 outline-none" required>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-bold text-navy mb-2">Pilih Layanan / Produk</label>
+                    <select id="waService" class="w-full border-2 border-gray-200 p-3.5 rounded-xl focus:border-teal focus:ring-0 outline-none" required>
+                        <option value="" disabled selected>Pilih salah satu...</option>
+                        <optgroup label="Jasa Akademik">
+                            <option value="Joki Laporan PKL (Hemat)">Joki Laporan PKL (Hemat - 40k)</option>
+                            <option value="Joki Laporan PKL (Pro)">Joki Laporan PKL (Pro - 50k)</option>
+                            <option value="Joki Laporan PKL (Full Service)">Joki Laporan PKL (Full Service - 80k)</option>
+                            <option value="Tugas Makalah/Esai">Tugas Makalah / Esai Lainnya</option>
+                        </optgroup>
+                        <optgroup label="Merchandise & Top Up">
+                            <option value="Tumbler Custom">Tumbler Custom</option>
+                            <option value="Gantungan Kunci Akrilik">Gantungan Kunci Akrilik</option>
+                            <option value="Cetak Polaroid">Cetak Polaroid (9 Foto)</option>
+                            <option value="Stiker Label Buku">Stiker Label Buku</option>
+                            <option value="Top Up Diamond FF">Top Up Diamond Free Fire</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-navy mb-2">Tenggat Waktu / Kapan Dibutuhkan</label>
+                    <input type="date" id="waDate" class="w-full border-2 border-gray-200 p-3.5 rounded-xl focus:border-teal focus:ring-0 outline-none" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-navy mb-2">Catatan Detail (Wajib diisi)</label>
+                <textarea id="waNote" rows="4" placeholder="Jelaskan spesifikasi tugas, ID Game untuk Top Up, atau request desain merchandise..." class="w-full border-2 border-gray-200 p-3.5 rounded-xl focus:border-teal focus:ring-0 outline-none" required></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-orange hover:bg-orange-600 text-white font-extrabold text-lg py-4 rounded-xl transition shadow-lg flex items-center justify-center gap-3">
+                <i class="fa-brands fa-whatsapp text-2xl"></i> Kirim Format ke WhatsApp
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('waForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('waName').value;
+            const service = document.getElementById('waService').value;
+            
+            const rawDate = document.getElementById('waDate').value;
+            const dateObj = new Date(rawDate);
+            const formattedDate = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            
+            const note = document.getElementById('waNote').value;
+
+            const message = `Halo Admin *Ketik Solusi*,\n\nSaya ingin order dengan detail berikut:\n\n*👤 Nama:* ${name}\n*🛒 Layanan/Produk:* ${service}\n*⏰ Tanggal Deadline/Dibutuhkan:* ${formattedDate}\n*📝 Catatan / Request Khusus:*\n${note}\n\nMohon info total biaya dan instruksi pembayarannya ya. Terima kasih!`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const waNumber = '6285143967392'; 
+            window.open(`https://wa.me/${waNumber}?text=${encodedMessage}`, '_blank');
+        });
+    </script>
+</body>
+</html>
