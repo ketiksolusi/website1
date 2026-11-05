@@ -2,28 +2,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const trackForm = document.getElementById('trackForm');
     const trackResult = document.getElementById('trackResult');
     
-    // LINK DATABASE SPREADSHEET MILIKMU (Sudah diubah ke format export CSV)
-    const sheetCSV_URL = "https://docs.google.com/spreadsheets/d/1mCH2kkcE-bJgEU7nzCLvZk5JeLUFEO_JBcyTgeCanvQ/export?format=csv";
+    // LINK WEB APP GOOGLE APPS SCRIPT TERBARU ANDA
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyTtHtmxb-ZoogjkjkItRw0vKiz4LmoE2D7ZsLyL16XAtf2GzMncBTyzK2vLUttxvZM/exec";
 
     // FUNGSI PEWARNAAN OTOMATIS BERDASARKAN KATA KUNCI STATUS
     function getBadgeColor(statusText) {
         const text = statusText.toLowerCase();
         
-        // Jika mengandung kata: tunggu, bayar, antre
         if (text.includes('tunggu') || text.includes('bayar') || text.includes('antre')) {
-            return 'bg-gray-500 text-white'; // Warna Abu-abu (Pending)
+            return 'bg-gray-500 text-white'; 
         } 
-        // Jika mengandung kata: proses, koding, revisi, sedang, kerja
-        else if (text.includes('proses') || text.includes('koding') || text.includes('revisi') || text.includes('sedang') || text.includes('kerja')) {
-            return 'bg-orange text-white'; // Warna Oranye (Berjalan)
+        else if (text.includes('proses') || text.includes('koding') || text.includes('revisi') || text.includes('sedang') || text.includes('kerja') || text.includes('50%')) {
+            return 'bg-orange text-white'; 
         } 
-        // Jika mengandung kata: selesai, dikirim, lunas, sukses
         else if (text.includes('selesai') || text.includes('dikirim') || text.includes('lunas') || text.includes('sukses')) {
-            return 'bg-green-500 text-white'; // Warna Hijau (Berhasil)
+            return 'bg-green-500 text-white'; 
         } 
-        // Warna Default jika kata tidak dikenali
         else {
-            return 'bg-teal text-white'; // Warna Toska khas Ketik Solusi
+            return 'bg-teal text-white'; 
         }
     }
 
@@ -33,41 +29,31 @@ document.addEventListener("DOMContentLoaded", () => {
             const inputId = document.getElementById('trackId').value.trim().toUpperCase();
             
             if(inputId !== '') {
-                // Tampilkan efek loading
                 trackResult.innerHTML = `<p class="text-center text-teal font-bold"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Mencari data ke database...</p>`;
                 trackResult.classList.remove('hidden');
 
                 try {
-                    // Mengambil data dari Google Sheets
-                    const response = await fetch(sheetCSV_URL);
-                    const csvText = await response.text();
+                    // Mengambil data JSON dari Google Apps Script khusus tab pesanan
+                    const response = await fetch(WEB_APP_URL + "?type=pesanan");
+                    const data = await response.json();
                     
-                    // Memecah baris data CSV
-                    const rows = csvText.split('\n');
                     let foundData = null;
 
-                    // Mulai pencarian dari baris kedua (index 1) untuk melewati judul kolom
-                    for (let i = 1; i < rows.length; i++) {
-                        // Memecah kolom berdasarkan tanda koma
-                        const columns = rows[i].split(',');
-                        
-                        // Cek apakah kolom ID (kolom ke-0) sama dengan input pengguna
-                        if (columns.length > 1 && columns[0].trim().toUpperCase() === inputId) {
-                            const statusPesanan = columns[2] ? columns[2].trim() : "";
-                            
+                    // Melakukan pencarian berdasarkan id_trx
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i].id_trx && data[i].id_trx.toUpperCase() === inputId) {
+                            const statusPesanan = data[i].status ? data[i].status.trim() : "Diproses";
                             foundData = {
-                                layanan: columns[1] ? columns[1].trim() : "",
+                                layanan: data[i].layanan ? data[i].layanan.trim() : "",
                                 status: statusPesanan,
-                                tanggal: columns[3] ? columns[3].trim() : "",
-                                keterangan: columns[4] ? columns[4].trim() : "",
-                                // Panggil fungsi warna otomatis
+                                tanggal: data[i].tanggal ? data[i].tanggal.trim() : "Terbaru",
+                                keterangan: data[i].keterangan ? data[i].keterangan.trim() : "Proses pengerjaan tugas sedang berlangsung.",
                                 warnaBadge: getBadgeColor(statusPesanan) 
                             };
                             break; 
                         }
                     }
 
-                    // Tampilkan hasil ke layar
                     if (foundData) {
                         trackResult.innerHTML = `
                             <div class="flex items-center justify-between mb-4">
@@ -81,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             </div>
                         `;
                     } else {
-                        // KONDISI JIKA ID TIDAK ADA DI DALAM SPREADSHEET
                         trackResult.innerHTML = `
                             <div class="bg-red-50 p-4 rounded-xl border border-red-200 text-center shadow-inner">
                                 <i class="fa-solid fa-circle-exclamation text-red-500 text-3xl mb-2"></i>
