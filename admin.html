@@ -8,78 +8,88 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>tailwind.config = { theme: { extend: { colors: { navy: '#1e3a5f', teal: '#2bb4ab', orange: '#ff8c00' } } } }</script>
 </head>
-<body class="bg-gray-100 font-sans flex h-screen overflow-hidden">
+<body class="bg-gray-100 font-sans flex flex-col md:flex-row h-screen overflow-hidden">
 
-    <!-- Sidebar Admin -->
-    <aside class="w-64 bg-navy text-white flex flex-col hidden md:flex">
-        <div class="p-6 text-center border-b border-gray-700">
-            <h2 class="text-2xl font-bold text-orange">Ketik<span class="text-teal">Solusi</span></h2>
-            <p class="text-xs text-gray-400">Admin Dashboard</p>
+    <!-- OVERLAY SIDEBAR MOBILE -->
+    <div id="sidebarOverlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
+
+    <!-- SIDEBAR ADMIN (Responsive Mobile & Desktop) -->
+    <aside id="sidebarNav" class="w-72 md:w-64 bg-navy text-white flex flex-col fixed md:relative inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
+        <div class="p-6 text-center border-b border-gray-700 flex justify-between items-center md:block">
+            <div>
+                <h2 class="text-2xl font-bold text-orange">Ketik<span class="text-teal">Solusi</span></h2>
+                <p class="text-xs text-gray-400">Admin Dashboard</p>
+            </div>
+            <button onclick="toggleMobileSidebar()" class="md:hidden text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <nav class="flex-1 p-4 space-y-2">
-            <button onclick="switchTab('ringkasan')" id="navRingkasan" class="w-full flex items-center gap-3 bg-teal text-white p-3 rounded-lg font-bold transition text-left">
-                <i class="fa-solid fa-chart-pie"></i> Ringkasan & Log Aktivitas
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <button onclick="switchTab('ringkasan')" id="navRingkasan" class="w-full flex items-center gap-3 bg-teal text-white p-3 rounded-xl font-bold transition text-left text-sm">
+                <i class="fa-solid fa-chart-pie w-5"></i> Ringkasan & Log
             </button>
-            <button onclick="switchTab('pesanan')" id="navPesanan" class="w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-lg transition text-left">
-                <i class="fa-solid fa-laptop-code"></i> Kelola Pesanan Tugas
+            <button onclick="switchTab('pesanan')" id="navPesanan" class="w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm">
+                <i class="fa-solid fa-laptop-code w-5"></i> Kelola Tugas
             </button>
-            <button onclick="switchTab('produk')" id="navProduk" class="w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-lg transition text-left">
-                <i class="fa-solid fa-box-open"></i> Kelola Produk & Merchandise
+            <button onclick="switchTab('produk')" id="navProduk" class="w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm">
+                <i class="fa-solid fa-box-open w-5"></i> Kelola Produk
             </button>
-            <button onclick="switchTab('kupon')" id="navKupon" class="w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-lg transition text-left">
-                <i class="fa-solid fa-ticket"></i> Buat Kode Kupon
+            <button onclick="switchTab('kupon')" id="navKupon" class="w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm">
+                <i class="fa-solid fa-ticket w-5"></i> Buat Kupon
             </button>
         </nav>
         <div class="p-4 border-t border-gray-700">
-            <a href="index.html" class="flex items-center gap-3 text-gray-400 hover:text-white transition"><i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar</a>
+            <a href="index.html" class="flex items-center gap-3 text-gray-400 hover:text-white transition text-sm"><i class="fa-solid fa-arrow-right-from-bracket w-5"></i> Keluar</a>
         </div>
     </aside>
 
-    <!-- Konten Utama -->
-    <main class="flex-1 flex flex-col h-full overflow-y-auto relative">
+    <!-- KONTEN UTAMA -->
+    <main class="flex-1 flex flex-col h-full overflow-y-auto relative w-full">
         <header class="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
-            <h1 id="pageTitle" class="text-xl font-bold text-navy">Ringkasan & Log Aktivitas</h1>
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-orange rounded-full flex items-center justify-center text-white font-bold shadow-md">AD</div>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleMobileSidebar()" class="md:hidden text-navy text-xl p-1"><i class="fa-solid fa-bars"></i></button>
+                <h1 id="pageTitle" class="text-base md:text-xl font-bold text-navy truncate">Ringkasan & Log Aktivitas</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-gray-600 hidden sm:inline">Admin Alister</span>
+                <div class="w-9 h-9 bg-orange rounded-full flex items-center justify-center text-white font-bold shadow-md text-sm">AD</div>
             </div>
         </header>
 
-        <div class="p-6 space-y-6">
+        <div class="p-4 md:p-6 space-y-6">
             <!-- 4 KARTU STATISTIK UTAMA -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-teal flex items-center justify-between">
-                    <div><p class="text-xs text-gray-500 font-bold">Total Klaim Kupon</p><h3 id="statKlaim" class="text-2xl font-extrabold text-navy">0</h3></div>
-                    <i class="fa-solid fa-ticket text-3xl text-teal opacity-50"></i>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-teal flex items-center justify-between">
+                    <div><p class="text-[11px] text-gray-500 font-bold uppercase">Klaim Kupon</p><h3 id="statKlaim" class="text-xl md:text-2xl font-extrabold text-navy">0</h3></div>
+                    <i class="fa-solid fa-ticket text-2xl md:text-3xl text-teal opacity-50 hidden sm:block"></i>
                 </div>
-                <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-orange flex items-center justify-between">
-                    <div><p class="text-xs text-gray-500 font-bold">Total Pesanan & Produk</p><h3 id="statPesanan" class="text-2xl font-extrabold text-navy">0</h3></div>
-                    <i class="fa-solid fa-box-open text-3xl text-orange opacity-50"></i>
+                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-orange flex items-center justify-between">
+                    <div><p class="text-[11px] text-gray-500 font-bold uppercase">Total Pesanan</p><h3 id="statPesanan" class="text-xl md:text-2xl font-extrabold text-navy">0</h3></div>
+                    <i class="fa-solid fa-box-open text-2xl md:text-3xl text-orange opacity-50 hidden sm:block"></i>
                 </div>
-                <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-red-500 flex items-center justify-between">
-                    <div><p class="text-xs text-gray-500 font-bold">Tugas Belum Selesai</p><h3 id="statBelumSelesai" class="text-2xl font-extrabold text-red-600">0</h3></div>
-                    <i class="fa-solid fa-clock-rotate-left text-3xl text-red-500 opacity-50"></i>
+                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-red-500 flex items-center justify-between">
+                    <div><p class="text-[11px] text-gray-500 font-bold uppercase">Belum Selesai</p><h3 id="statBelumSelesai" class="text-xl md:text-2xl font-extrabold text-red-600">0</h3></div>
+                    <i class="fa-solid fa-clock-rotate-left text-2xl md:text-3xl text-red-500 opacity-50 hidden sm:block"></i>
                 </div>
-                <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-green-500 flex items-center justify-between">
-                    <div><p class="text-xs text-gray-500 font-bold">Total Pendapatan (Lunas)</p><h3 id="statPendapatan" class="text-lg font-extrabold text-navy">Rp 0</h3></div>
-                    <i class="fa-solid fa-money-bill-wave text-3xl text-green-500 opacity-50"></i>
+                <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-green-500 flex items-center justify-between">
+                    <div><p class="text-[11px] text-gray-500 font-bold uppercase">Pendapatan</p><h3 id="statPendapatan" class="text-sm md:text-lg font-extrabold text-navy truncate">Rp 0</h3></div>
+                    <i class="fa-solid fa-money-bill-wave text-2xl md:text-3xl text-green-500 opacity-50 hidden sm:block"></i>
                 </div>
             </div>
 
             <!-- VIEW 1: KELOLA KODE KUPON -->
             <div id="viewKupon" class="space-y-6 hidden">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 border-b pb-4">
                         <div>
-                            <h2 class="font-extrabold text-lg text-navy">Daftar Kode Kupon Promo</h2>
+                            <h2 class="font-extrabold text-base md:text-lg text-navy">Daftar Kode Kupon Promo</h2>
                             <p class="text-xs text-gray-500">Atur kupon diskon dan batas kuota pengguna.</p>
                         </div>
-                        <button onclick="openModal('modalKupon')" class="bg-orange hover:bg-orange-600 text-white font-bold px-4 py-2.5 rounded-xl transition shadow-md text-sm flex items-center gap-2">
+                        <button onclick="openModal('modalKupon')" class="w-full sm:w-auto bg-orange hover:bg-orange-600 text-white font-bold px-4 py-2.5 rounded-xl transition shadow-md text-sm flex items-center justify-center gap-2">
                             <i class="fa-solid fa-plus text-base"></i> Buat Kupon Baru
                         </button>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-50 text-gray-600 text-sm">
+                        <table class="w-full text-left min-w-[600px]">
+                            <thead class="bg-gray-50 text-gray-600 text-xs md:text-sm">
                                 <tr>
                                     <th class="p-3">Kode Promo</th>
                                     <th class="p-3">Diskon</th>
@@ -88,7 +98,7 @@
                                     <th class="p-3 text-center">Aksi (Lihat Klaim)</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableKuponBody" class="text-sm text-gray-700">
+                            <tbody id="tableKuponBody" class="text-xs md:text-sm text-gray-700">
                                 <tr><td colspan="5" class="p-4 text-center text-gray-400">Memuat data kupon...</td></tr>
                             </tbody>
                         </table>
@@ -96,21 +106,21 @@
                 </div>
             </div>
 
-            <!-- VIEW 2: KELOLA PESANAN TUGAS (DENGAN TOMBOL CHAT WA OTOMATIS) -->
+            <!-- VIEW 2: KELOLA PESANAN TUGAS -->
             <div id="viewPesanan" class="space-y-6 hidden">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 border-b pb-4">
                         <div>
-                            <h2 class="font-extrabold text-lg text-navy">Kelola Pesanan Tugas Akademik / Joki</h2>
+                            <h2 class="font-extrabold text-base md:text-lg text-navy">Kelola Pesanan Tugas Akademik / Joki</h2>
                             <p class="text-xs text-gray-500">Pantau progres laporan PKL, makalah, koding, dan kirim info via WhatsApp.</p>
                         </div>
-                        <button onclick="openModal('modalPesanan')" class="bg-teal hover:bg-teal-600 text-white font-bold px-4 py-2.5 rounded-xl transition shadow-md text-sm flex items-center gap-2">
+                        <button onclick="openModal('modalPesanan')" class="w-full sm:w-auto bg-teal hover:bg-teal-600 text-white font-bold px-4 py-2.5 rounded-xl transition shadow-md text-sm flex items-center justify-center gap-2">
                             <i class="fa-solid fa-plus text-base"></i> Tambah Tugas Baru
                         </button>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-50 text-gray-600 text-sm">
+                        <table class="w-full text-left min-w-[750px]">
+                            <thead class="bg-gray-50 text-gray-600 text-xs md:text-sm">
                                 <tr>
                                     <th class="p-3">ID Trx</th>
                                     <th class="p-3">Nama Klien</th>
@@ -121,7 +131,7 @@
                                     <th class="p-3 text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="tablePesananBody" class="text-sm text-gray-700">
+                            <tbody id="tablePesananBody" class="text-xs md:text-sm text-gray-700">
                                 <tr><td colspan="7" class="p-4 text-center text-gray-400">Memuat data tugas...</td></tr>
                             </tbody>
                         </table>
@@ -131,19 +141,19 @@
 
             <!-- VIEW 3: KELOLA PRODUK & MERCHANDISE -->
             <div id="viewProduk" class="space-y-6 hidden">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 border-b pb-4">
                         <div>
-                            <h2 class="font-extrabold text-lg text-navy">Kelola Pesanan Produk & Merchandise</h2>
+                            <h2 class="font-extrabold text-base md:text-lg text-navy">Kelola Pesanan Produk & Merchandise</h2>
                             <p class="text-xs text-gray-500">Pantau pesanan stiker label, cetak foto, buku custom, ganci, dan top-up.</p>
                         </div>
-                        <button onclick="openModal('modalProduk')" class="bg-orange hover:bg-orange-600 text-white font-bold px-4 py-2.5 rounded-xl transition shadow-md text-sm flex items-center gap-2">
+                        <button onclick="openModal('modalProduk')" class="w-full sm:w-auto bg-orange hover:bg-orange-600 text-white font-bold px-4 py-2.5 rounded-xl transition shadow-md text-sm flex items-center justify-center gap-2">
                             <i class="fa-solid fa-plus text-base"></i> Tambah Produk Baru
                         </button>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-50 text-gray-600 text-sm">
+                        <table class="w-full text-left min-w-[700px]">
+                            <thead class="bg-gray-50 text-gray-600 text-xs md:text-sm">
                                 <tr>
                                     <th class="p-3">ID Trx</th>
                                     <th class="p-3">Nama Pembeli</th>
@@ -153,7 +163,7 @@
                                     <th class="p-3 text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableProdukBody" class="text-sm text-gray-700">
+                            <tbody id="tableProdukBody" class="text-xs md:text-sm text-gray-700">
                                 <tr><td colspan="6" class="p-4 text-center text-gray-400">Memuat data produk...</td></tr>
                             </tbody>
                         </table>
@@ -165,8 +175,8 @@
             <div id="viewRingkasan" class="space-y-6">
                 <!-- Notifikasi Deadline -->
                 <div id="sectionNotifDeadline" class="bg-white rounded-xl shadow-sm overflow-hidden border border-red-200">
-                    <div class="bg-red-50 p-4 border-b border-red-100 flex justify-between items-center">
-                        <h2 class="font-bold text-red-700 text-sm flex items-center gap-2">
+                    <div class="bg-red-50 p-4 border-b border-red-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <h2 class="font-bold text-red-700 text-xs md:text-sm flex items-center gap-2">
                             <i class="fa-solid fa-triangle-exclamation text-red-500 text-base"></i> Notifikasi Tugas Mendekati / Lewat Deadline
                         </h2>
                         <span id="notifCountBadge" class="bg-red-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">0 Perhatian</span>
@@ -179,12 +189,12 @@
                 <!-- Tabel Log Klaim Kupon -->
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
                     <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
-                        <h2 class="font-bold text-navy"><i class="fa-solid fa-ticket text-orange mr-2"></i> Log Pelanggan Klaim Kupon & Token Fix</h2>
-                        <button onclick="loadAllData()" class="bg-teal text-white text-sm px-3 py-1 rounded hover:bg-teal-600 transition"><i class="fa-solid fa-rotate mr-1"></i> Refresh</button>
+                        <h2 class="font-bold text-navy text-xs md:text-sm flex items-center"><i class="fa-solid fa-ticket text-orange mr-2"></i> Log Pelanggan Klaim Kupon & Token Fix</h2>
+                        <button onclick="loadAllData()" class="bg-teal text-white text-xs px-3 py-1.5 rounded-lg hover:bg-teal-600 transition flex items-center gap-1"><i class="fa-solid fa-rotate"></i> Refresh</button>
                     </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-100 text-gray-600 text-sm">
+                        <table class="w-full text-left min-w-[700px]">
+                            <thead class="bg-gray-100 text-gray-600 text-xs md:text-sm">
                                 <tr>
                                     <th class="p-4">Waktu</th>
                                     <th class="p-4">Kode Promo</th>
@@ -193,7 +203,7 @@
                                     <th class="p-4">No WhatsApp (Template Token)</th>
                                 </tr>
                             </thead>
-                            <tbody id="tableLogBody" class="text-sm text-gray-700">
+                            <tbody id="tableLogBody" class="text-xs md:text-sm text-gray-700">
                                 <tr><td colspan="5" class="p-4 text-center text-gray-400">Memuat data...</td></tr>
                             </tbody>
                         </table>
@@ -208,11 +218,11 @@
     <div id="modalDetailKlaim" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border-t-4 border-orange relative">
             <button onclick="closeModal('modalDetailKlaim')" class="absolute top-4 right-4 text-gray-400 hover:text-navy text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-extrabold text-navy mb-1"><i class="fa-solid fa-users text-orange mr-2"></i> Daftar Klaim Kode: <span id="detailKodeTitle" class="text-teal"></span></h3>
+            <h3 class="text-lg md:text-xl font-extrabold text-navy mb-1"><i class="fa-solid fa-users text-orange mr-2"></i> Daftar Klaim Kode: <span id="detailKodeTitle" class="text-teal"></span></h3>
             <p class="text-xs text-gray-500 mb-4">Daftar pelanggan lengkap dengan ID token unik masing-masing.</p>
             
             <div class="max-h-60 overflow-y-auto border rounded-xl">
-                <table class="w-full text-left text-xs">
+                <table class="w-full text-left text-xs min-w-[450px]">
                     <thead class="bg-gray-100 text-gray-600">
                         <tr>
                             <th class="p-2.5">Waktu</th>
@@ -234,9 +244,9 @@
 
     <!-- MODAL POP-UP: BUAT KODE KUPON -->
     <div id="modalKupon" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-t-4 border-orange relative animate-fadeIn">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-t-4 border-orange relative">
             <button onclick="closeModal('modalKupon')" class="absolute top-4 right-4 text-gray-400 hover:text-navy text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-ticket text-orange mr-2"></i> Buat Kode Redeem Baru</h3>
+            <h3 class="text-lg md:text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-ticket text-orange mr-2"></i> Buat Kode Redeem Baru</h3>
             <p class="text-xs text-gray-500 mb-6">Tentukan kode promo, diskon, dan kuota maksimal.</p>
             
             <form id="formPromo" class="space-y-4">
@@ -264,10 +274,10 @@
     </div>
 
     <!-- MODAL POP-UP: TAMBAH PESANAN TUGAS -->
-    <div id="modalPesanan" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border-t-4 border-teal relative">
+    <div id="modalPesanan" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border-t-4 border-teal relative my-8">
             <button onclick="closeModal('modalPesanan')" class="absolute top-4 right-4 text-gray-400 hover:text-navy text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-laptop-code text-teal mr-2"></i> Tambah Pesanan Tugas Baru</h3>
+            <h3 class="text-lg md:text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-laptop-code text-teal mr-2"></i> Tambah Pesanan Tugas Baru</h3>
             <p class="text-xs text-gray-500 mb-6">Catat tugas akademik atau joki baru.</p>
             
             <form id="formOrder" class="space-y-4">
@@ -327,10 +337,10 @@
     </div>
 
     <!-- MODAL POP-UP: TAMBAH PRODUK CUSTOM & MERCHANDISE -->
-    <div id="modalProduk" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border-t-4 border-orange relative">
+    <div id="modalProduk" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border-t-4 border-orange relative my-8">
             <button onclick="closeModal('modalProduk')" class="absolute top-4 right-4 text-gray-400 hover:text-navy text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-box-open text-orange mr-2"></i> Tambah Pesanan Produk Baru</h3>
+            <h3 class="text-lg md:text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-box-open text-orange mr-2"></i> Tambah Pesanan Produk Baru</h3>
             <p class="text-xs text-gray-500 mb-6">Catat pesanan stiker label, cetak foto, buku custom, atau top-up.</p>
             
             <form id="formProduk" class="space-y-4">
@@ -382,10 +392,10 @@
     </div>
 
     <!-- MODAL POP-UP: UPDATE STATUS TUGAS -->
-    <div id="modalUpdate" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-t-4 border-navy relative">
+    <div id="modalUpdate" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-t-4 border-navy relative my-8">
             <button onclick="closeModal('modalUpdate')" class="absolute top-4 right-4 text-gray-400 hover:text-navy text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-gear text-navy mr-2"></i> Update Status Tugas</h3>
+            <h3 class="text-lg md:text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-gear text-navy mr-2"></i> Update Status Tugas</h3>
             <p class="text-xs text-gray-500 mb-4">Ubah status atau deadline untuk ID: <span id="upTargetId" class="font-bold text-orange"></span></p>
             
             <form id="formUpdate" class="space-y-4">
@@ -438,41 +448,52 @@
         function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
         function closeModal(modalId) { document.getElementById(modalId).classList.add('hidden'); }
 
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebarNav');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
         function switchTab(tab) {
             document.getElementById('viewRingkasan').classList.add('hidden');
             document.getElementById('viewPesanan').classList.add('hidden');
             document.getElementById('viewProduk').classList.add('hidden');
             document.getElementById('viewKupon').classList.add('hidden');
 
-            document.getElementById('navRingkasan').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-lg transition text-left";
-            document.getElementById('navPesanan').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-lg transition text-left";
-            document.getElementById('navProduk').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-lg transition text-left";
-            document.getElementById('navKupon').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-lg transition text-left";
+            document.getElementById('navRingkasan').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm";
+            document.getElementById('navPesanan').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm";
+            document.getElementById('navProduk').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm";
+            document.getElementById('navKupon').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm";
+
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            }
 
             if (tab === 'ringkasan') {
                 document.getElementById('viewRingkasan').classList.remove('hidden');
-                document.getElementById('navRingkasan').className = "w-full flex items-center gap-3 bg-teal text-white p-3 rounded-lg font-bold transition text-left";
+                document.getElementById('navRingkasan').className = "w-full flex items-center gap-3 bg-teal text-white p-3 rounded-xl font-bold transition text-left text-sm";
                 document.getElementById('pageTitle').innerText = "Ringkasan & Log Aktivitas";
                 loadAllData();
             } else if (tab === 'pesanan') {
                 document.getElementById('viewPesanan').classList.remove('hidden');
-                document.getElementById('navPesanan').className = "w-full flex items-center gap-3 bg-teal text-white p-3 rounded-lg font-bold transition text-left";
+                document.getElementById('navPesanan').className = "w-full flex items-center gap-3 bg-teal text-white p-3 rounded-xl font-bold transition text-left text-sm";
                 document.getElementById('pageTitle').innerText = "Kelola Pesanan Tugas";
                 loadPesananData();
             } else if (tab === 'produk') {
                 document.getElementById('viewProduk').classList.remove('hidden');
-                document.getElementById('navProduk').className = "w-full flex items-center gap-3 bg-teal text-white p-3 rounded-lg font-bold transition text-left";
+                document.getElementById('navProduk').className = "w-full flex items-center gap-3 bg-teal text-white p-3 rounded-xl font-bold transition text-left text-sm";
                 document.getElementById('pageTitle').innerText = "Kelola Produk & Merchandise";
                 loadProdukData();
             } else if (tab === 'kupon') {
                 document.getElementById('viewKupon').classList.remove('hidden');
-                document.getElementById('navKupon').className = "w-full flex items-center gap-3 bg-teal text-white p-3 rounded-lg font-bold transition text-left";
+                document.getElementById('navKupon').className = "w-full flex items-center gap-3 bg-teal text-white p-3 rounded-xl font-bold transition text-left text-sm";
                 document.getElementById('pageTitle').innerText = "Buat & Atur Kode Kupon";
                 loadKuponData();
             }
         }
 
-        // FUNGSI CEK DEADLINE TUGAS (DITAMPILKAN DI BAGIAN BAWAH HALAMAN UTAMA)
+        // FUNGSI CEK DEADLINE TUGAS
         function processBottomDeadlines(pesananData) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
@@ -494,13 +515,13 @@
                         let ket = "";
                         let badgeClass = "";
                         if (diffDays < 0) {
-                            ket = "Sudah Terlewat (Deadline!)";
+                            ket = "Terlewat (Deadline!)";
                             badgeClass = "bg-red-100 text-red-700 font-bold";
                         } else if (diffDays === 0) {
-                            ket = "Deadline Hari Ini!";
+                            ket = "Hari Ini!";
                             badgeClass = "bg-orange-100 text-orange font-bold";
                         } else {
-                            ket = "Deadline Besok (H-1)";
+                            ket = "Besok (H-1)";
                             badgeClass = "bg-yellow-100 text-yellow-800 font-bold";
                         }
 
@@ -524,12 +545,12 @@
                 let html = "";
                 urgentList.forEach(item => {
                     html += `
-                        <div class="p-3 bg-white border-l-4 border-red-500 rounded-lg shadow-sm flex justify-between items-center">
+                        <div class="p-3 bg-white border-l-4 border-red-500 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                             <div>
-                                <span class="font-bold text-navy">${item.id} - ${item.nama}</span> (${item.layanan})
-                                <p class="text-gray-500 text-[11px] mt-0.5">Tenggat Waktu: <b>${item.tanggal}</b></p>
+                                <span class="font-bold text-navy">${item.id} - ${item.nama}</span> <span class="text-gray-500">(${item.layanan})</span>
+                                <p class="text-gray-500 text-[11px] mt-0.5">Deadline: <b>${item.tanggal}</b></p>
                             </div>
-                            <span class="${item.badge} px-2.5 py-1 rounded text-[10px]">${item.keterangan}</span>
+                            <span class="${item.badge} px-2.5 py-1 rounded text-[10px] whitespace-nowrap">${item.keterangan}</span>
                         </div>
                     `;
                 });
@@ -542,7 +563,6 @@
 
         async function loadAllData() {
             try {
-                // 1. Load Log Klaim Kupon & ID Token Unik Fix dari Spreadsheet
                 const resKlaim = await fetch(WEB_APP_URL);
                 const dataKlaim = await resKlaim.json();
                 document.getElementById('statKlaim').innerText = dataKlaim.length;
@@ -553,19 +573,19 @@
                 } else {
                     dataKlaim.reverse().forEach(row => {
                         let waClean = String(row.whatsapp || "").replace(/^0/, '');
-                        let uniqueToken = row.token || "-"; // Token Fix Permanen dari Spreadsheet
+                        let uniqueToken = row.token || "-";
                         
-                        let waMessage = `Halo Kak ${row.nama},\n\nTerima kasih telah mengklaim kode promo *${row.kode}* di *Ketik Solusi*.\n\nBerikut adalah *ID Token Unik* diskon Anda:\n🎟️ *Token:* \`${uniqueToken}\`\n\nSilakan tunjukkan token ini saat melakukan pemesanan via form order ya. Terima kasih!`;
+                        let waMessage = `Halo Kak ${row.nama},\n\nTerima kasih telah mengklaim kode promo *${row.kode}* di *Ketik Solusi*.\n\nBerikut adalah *ID Token Unik* diskon Anda:\n🎟️ *Token:* \`${uniqueToken}\`\n\nSilakan tunjukkan token ini saat melakukan pemesanan ya. Terima kasih!`;
                         let waLink = `https://wa.me/62${waClean}?text=${encodeURIComponent(waMessage)}`;
 
                         html += `
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="p-4 text-xs text-gray-500">${row.timestamp}</td>
+                                <td class="p-4 text-xs text-gray-500 whitespace-nowrap">${row.timestamp}</td>
                                 <td class="p-4 font-bold text-navy"><span class="bg-orange/10 text-orange px-2 py-1 rounded text-xs">${row.kode}</span></td>
                                 <td class="p-4 font-mono font-bold text-teal bg-teal/5 rounded">${uniqueToken}</td>
                                 <td class="p-4 font-semibold">${row.nama}</td>
                                 <td class="p-4">
-                                    <a href="${waLink}" target="_blank" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 text-xs font-bold">
+                                    <a href="${waLink}" target="_blank" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 text-xs font-bold whitespace-nowrap">
                                         <i class="fa-brands fa-whatsapp text-green-600 text-sm"></i> Kirim WA (${row.whatsapp})
                                     </a>
                                 </td>
@@ -575,7 +595,6 @@
                 }
                 document.getElementById('tableLogBody').innerHTML = html;
 
-                // 2. Load Data Pesanan Tugas (Mendukung kategori status baru untuk pendapatan dan pending)
                 const resPesanan = await fetch(WEB_APP_URL + "?type=pesanan");
                 const dataPesanan = await resPesanan.json();
                 document.getElementById('statPesanan').innerText = dataPesanan.length;
@@ -584,11 +603,9 @@
                 let totalPendapatan = 0;
                 dataPesanan.forEach(row => {
                     const s = (row.status || "").toLowerCase();
-                    // Status Berhasil/Selesai masuk hitungan pendapatan
                     if(s.includes('selesai') || s.includes('lunas') || s.includes('sukses')) {
                         totalPendapatan += Number(row.biaya || 0);
                     } else {
-                        // Tahap Awal dan Tahap Pengerjaan masuk hitungan belum selesai
                         belumSelesaiCount++;
                     }
                 });
@@ -621,20 +638,19 @@
                             belumSelesaiCount++;
                         }
 
-                        // Template Chat WhatsApp Otomatis untuk Klien Tugas
                         let waClean = String(row.whatsapp || "").replace(/^0/, '');
                         let textWa = `Halo Kak ${row.nama},\n\nBerikut informasi status tugas Anda di *Ketik Solusi*:\n\n🆔 *ID Transaksi:* ${row.id_trx}\n📚 *Layanan:* ${row.layanan}\n📌 *Status:* ${row.status}\n⏰ *Deadline:* ${row.tanggal || '-'}\n\nSilakan cek progres secara berkala melalui website kami di:\nhttps://ketiksolusi.github.io/website1/\n\nTerima kasih!`;
                         let linkWa = `https://wa.me/62${waClean}?text=${encodeURIComponent(textWa)}`;
 
                         html += `
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="p-3 font-bold text-navy">${row.id_trx}</td>
+                                <td class="p-3 font-bold text-navy whitespace-nowrap">${row.id_trx}</td>
                                 <td class="p-3">${row.nama}</td>
                                 <td class="p-3">${row.layanan}</td>
-                                <td class="p-3 font-semibold text-green-600">Rp ${Number(row.biaya || 0).toLocaleString('id-ID')}</td>
-                                <td class="p-3"><span class="bg-teal/10 text-teal px-2.5 py-1 rounded-full text-xs font-bold">${row.status}</span></td>
+                                <td class="p-3 font-semibold text-green-600 whitespace-nowrap">Rp ${Number(row.biaya || 0).toLocaleString('id-ID')}</td>
+                                <td class="p-3"><span class="bg-teal/10 text-teal px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap">${row.status}</span></td>
                                 <td class="p-3 text-center">
-                                    <a href="${linkWa}" target="_blank" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1 text-xs font-bold">
+                                    <a href="${linkWa}" target="_blank" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1 text-xs font-bold whitespace-nowrap">
                                         <i class="fa-brands fa-whatsapp text-green-600"></i> Chat WA
                                     </a>
                                 </td>
@@ -653,7 +669,6 @@
             } catch (err) { console.error("Gagal memuat pesanan tugas"); }
         }
 
-        // FUNGSI LOAD KELOLA PRODUK & MERCHANDISE TERPISAH
         async function loadProdukData() {
             try {
                 const res = await fetch(WEB_APP_URL + "?type=pesanan");
@@ -671,11 +686,11 @@
                     produkList.forEach(row => {
                         html += `
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="p-3 font-bold text-navy">${row.id_trx}</td>
+                                <td class="p-3 font-bold text-navy whitespace-nowrap">${row.id_trx}</td>
                                 <td class="p-3">${row.nama}</td>
                                 <td class="p-3 font-semibold text-orange">${row.layanan}</td>
-                                <td class="p-3 font-semibold text-green-600">Rp ${Number(row.biaya || 0).toLocaleString('id-ID')}</td>
-                                <td class="p-3"><span class="bg-orange/10 text-orange px-2.5 py-1 rounded-full text-xs font-bold">${row.status}</span></td>
+                                <td class="p-3 font-semibold text-green-600 whitespace-nowrap">Rp ${Number(row.biaya || 0).toLocaleString('id-ID')}</td>
+                                <td class="p-3"><span class="bg-orange/10 text-orange px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap">${row.status}</span></td>
                                 <td class="p-3 text-center">
                                     <button onclick="openUpdateModal('${row.id_trx}', '${row.biaya}', '${row.status}', '${row.tanggal || ''}')" class="bg-gray-100 hover:bg-navy hover:text-white text-navy p-2 rounded-lg transition shadow-sm" title="Edit Status Produk">
                                         <i class="fa-solid fa-gear"></i>
@@ -701,12 +716,12 @@
                     data.forEach(row => {
                         html += `
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="p-3 font-bold text-navy"><span class="bg-orange/10 text-orange px-2 py-1 rounded text-xs">${row.kode}</span></td>
+                                <td class="p-3 font-bold text-navy whitespace-nowrap"><span class="bg-orange/10 text-orange px-2 py-1 rounded text-xs">${row.kode}</span></td>
                                 <td class="p-3 font-semibold">${row.diskon}%</td>
-                                <td class="p-3">${row.terpakai} / ${row.kuota} orang</td>
+                                <td class="p-3 whitespace-nowrap">${row.terpakai} / ${row.kuota} orang</td>
                                 <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${row.status === 'AKTIF' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${row.status}</span></td>
                                 <td class="p-3 text-center">
-                                    <button onclick="showDetailKlaim('${row.kode}')" class="bg-teal/10 hover:bg-teal hover:text-white text-teal px-3 py-1.5 rounded-lg transition text-xs font-bold flex items-center justify-center gap-1 mx-auto">
+                                    <button onclick="showDetailKlaim('${row.kode}')" class="bg-teal/10 hover:bg-teal hover:text-white text-teal px-3 py-1.5 rounded-lg transition text-xs font-bold flex items-center justify-center gap-1 mx-auto whitespace-nowrap">
                                         <i class="fa-solid fa-eye"></i> Lihat Klaim
                                     </button>
                                 </td>
@@ -736,18 +751,18 @@
                 } else {
                     filtered.forEach(item => {
                         let waClean = String(item.whatsapp || "").replace(/^0/, '');
-                        let uniqueToken = item.token || "-"; // Token Fix Permanen
-                        let waMessage = `Halo Kak ${item.nama},\n\nTerima kasih telah mengklaim kode promo *${item.kode}*.\n\nID Token Unik Anda: \`${uniqueToken}\`\n\nSilakan gunakan token ini saat order di website kami ya: https://ketiksolusi.github.io/website1/`;
+                        let uniqueToken = item.token || "-";
+                        let waMessage = `Halo Kak ${item.nama},\n\nTerima kasih telah mengklaim kode promo *${item.kode}*.\n\nID Token Unik Anda: \`${uniqueToken}\`\n\nSilakan gunakan token ini saat order di website kami ya!`;
                         let waLink = `https://wa.me/62${waClean}?text=${encodeURIComponent(waMessage)}`;
 
                         html += `
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="p-2.5 text-gray-500">${item.timestamp}</td>
+                                <td class="p-2.5 text-gray-500 whitespace-nowrap">${item.timestamp}</td>
                                 <td class="p-2.5 font-semibold text-navy">${item.nama}</td>
                                 <td class="p-2.5 font-mono font-bold text-teal">${uniqueToken}</td>
                                 <td class="p-2.5">
-                                    <a href="${waLink}" target="_blank" class="text-green-600 font-bold hover:underline text-xs bg-green-50 px-2 py-1 rounded">
-                                        <i class="fa-brands fa-whatsapp mr-1"></i> ${item.whatsapp}
+                                    <a href="${waLink}" target="_blank" class="text-green-600 font-bold hover:underline text-xs bg-green-50 px-2 py-1 rounded inline-flex items-center gap-1 whitespace-nowrap">
+                                        <i class="fa-brands fa-whatsapp"></i> ${item.whatsapp}
                                     </a>
                                 </td>
                             </tr>
@@ -765,7 +780,14 @@
             document.getElementById('upIdTrx').value = id;
             document.getElementById('upBiaya').value = biaya;
             document.getElementById('upStatus').value = status;
-            document.getElementById('upTanggal').value = tanggal;
+            
+            if (tanggal && tanggal !== "undefined" && tanggal !== "null") {
+                let formattedDate = tanggal.split('T')[0];
+                document.getElementById('upTanggal').value = formattedDate;
+            } else {
+                document.getElementById('upTanggal').value = "";
+            }
+
             openModal('modalUpdate');
         }
 
