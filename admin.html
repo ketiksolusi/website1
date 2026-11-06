@@ -10,10 +10,39 @@
 </head>
 <body class="bg-gray-100 font-sans flex flex-col md:flex-row h-screen overflow-hidden">
 
+    <!-- MODAL LOGIN ADMIN (Tampil jika belum login) -->
+    <div id="loginModal" class="fixed inset-0 bg-navy/80 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl relative animate-fadeIn text-center">
+            <a href="index.html" class="absolute top-5 right-5 text-gray-400 hover:text-navy text-xl" title="Kembali ke Beranda"><i class="fa-solid fa-xmark"></i></a>
+            
+            <div class="w-16 h-16 bg-navy rounded-full flex items-center justify-center mx-auto mb-4 text-orange shadow-lg text-2xl">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            
+            <h2 class="text-2xl font-extrabold text-navy mb-1">Login Admin Panel</h2>
+            <p class="text-xs text-gray-500 mb-6">Masukkan akses masuk dashboard</p>
+            
+            <form id="formLoginAdmin" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Username</label>
+                    <input type="text" id="loginUser" placeholder="Masukkan username" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-teal bg-gray-50 font-semibold" autocomplete="off" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Password</label>
+                    <input type="password" id="loginPass" placeholder="••••••••••••" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-teal bg-gray-50 font-semibold" autocomplete="new-password" required>
+                </div>
+                <button type="submit" class="w-full bg-navy hover:bg-navy/90 text-white font-bold py-3.5 rounded-xl transition shadow-lg text-sm mt-2">
+                    Masuk ke Admin Panel
+                </button>
+            </form>
+            <p id="loginError" class="text-xs font-semibold text-red-500 mt-3 text-center"></p>
+        </div>
+    </div>
+
     <!-- OVERLAY SIDEBAR MOBILE -->
     <div id="sidebarOverlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
 
-    <!-- SIDEBAR ADMIN (Responsive Mobile & Desktop) -->
+    <!-- SIDEBAR ADMIN -->
     <aside id="sidebarNav" class="w-72 md:w-64 bg-navy text-white flex flex-col fixed md:relative inset-y-0 left-0 z-30 transform -translate-x-full md:translate-x-0 transition-transform duration-300">
         <div class="p-6 text-center border-b border-gray-700 flex justify-between items-center md:block">
             <div>
@@ -35,9 +64,12 @@
             <button onclick="switchTab('kupon')" id="navKupon" class="w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm">
                 <i class="fa-solid fa-ticket w-5"></i> Buat Kupon
             </button>
+            <button onclick="switchTab('pengaturan')" id="navPengaturan" class="w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm">
+                <i class="fa-solid fa-user-gear w-5"></i> Pengaturan Admin
+            </button>
         </nav>
         <div class="p-4 border-t border-gray-700">
-            <a href="index.html" class="flex items-center gap-3 text-gray-400 hover:text-white transition text-sm"><i class="fa-solid fa-arrow-right-from-bracket w-5"></i> Keluar</a>
+            <button onclick="logoutAdmin()" class="w-full flex items-center gap-3 text-gray-400 hover:text-white transition text-sm text-left"><i class="fa-solid fa-arrow-right-from-bracket w-5"></i> Keluar / Lock</button>
         </div>
     </aside>
 
@@ -48,9 +80,12 @@
                 <button onclick="toggleMobileSidebar()" class="md:hidden text-navy text-xl p-1"><i class="fa-solid fa-bars"></i></button>
                 <h1 id="pageTitle" class="text-base md:text-xl font-bold text-navy truncate">Ringkasan & Log Aktivitas</h1>
             </div>
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-gray-600 hidden sm:inline">Admin Alister</span>
-                <div class="w-9 h-9 bg-orange rounded-full flex items-center justify-center text-white font-bold shadow-md text-sm">AD</div>
+            <div class="flex items-center gap-3">
+                <div class="text-right hidden sm:block">
+                    <span id="displayAdminNama" class="block text-xs font-bold text-navy">Admin</span>
+                    <span id="displayAdminIdentitas" class="block text-[10px] text-gray-500">Informatika</span>
+                </div>
+                <img id="displayAdminFoto" src="https://via.placeholder.com/100" alt="Admin" class="w-9 h-9 rounded-full object-cover border-2 border-orange shadow-md">
             </div>
         </header>
 
@@ -171,7 +206,38 @@
                 </div>
             </div>
 
-            <!-- VIEW 4: RINGKASAN & LOG AKTIVITAS -->
+            <!-- VIEW 4: PENGATURAN PROFIL ADMIN (Diatur full width agar tidak kosong di samping) -->
+            <div id="viewPengaturan" class="space-y-6 hidden">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 w-full">
+                    <h2 class="font-extrabold text-lg text-navy mb-1"><i class="fa-solid fa-user-gear text-orange mr-2"></i> Pengaturan Identitas & Profil Admin</h2>
+                    <p class="text-xs text-gray-500 mb-6">Ubah nama, identitas, dan foto profil admin langsung dari sini tanpa ubah kodingan.</p>
+                    
+                    <form id="formAdminProfile" class="space-y-4">
+                        <div class="flex items-center gap-4 mb-4">
+                            <img id="previewFoto" src="https://via.placeholder.com/100" alt="Foto Admin" class="w-16 h-16 rounded-full object-cover border-2 border-orange shadow-md">
+                            <div class="flex-1">
+                                <label class="block text-xs font-bold text-gray-700 mb-1">Link URL Foto Profil</label>
+                                <input type="url" id="adminFoto" placeholder="https://example.com/foto.jpg" class="w-full border-2 border-gray-200 p-2.5 rounded-xl text-xs outline-none focus:border-teal bg-gray-50">
+                                <p class="text-[10px] text-gray-400 mt-1">Tempel link gambar langsung (URL).</p>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Nama Admin</label>
+                            <input type="text" id="adminNama" placeholder="Cth: Iqra" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-teal bg-gray-50 font-semibold" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Identitas / Jabatan / NIM</label>
+                            <input type="text" id="adminIdentitas" placeholder="Cth: D0225015 - Informatika" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-teal bg-gray-50 font-semibold" required>
+                        </div>
+                        <button type="submit" class="bg-navy hover:bg-navy/90 text-white font-bold px-6 py-3 rounded-xl transition text-sm shadow-md">
+                            Simpan Perubahan Profil
+                        </button>
+                    </form>
+                    <p id="msgProfil" class="text-xs font-semibold mt-3 text-center"></p>
+                </div>
+            </div>
+
+            <!-- VIEW 5: RINGKASAN & LOG AKTIVITAS -->
             <div id="viewRingkasan" class="space-y-6">
                 <!-- Notifikasi Deadline -->
                 <div id="sectionNotifDeadline" class="bg-white rounded-xl shadow-sm overflow-hidden border border-red-200">
@@ -214,101 +280,51 @@
         </div>
     </main>
 
-    <!-- MODAL POP-UP: DETAIL KLAIM KODE KUPON -->
+    <!-- MODAL PENDUKUNG (DETAIL KLAIM, KUPON, PESANAN, PRODUK, UPDATE) -->
     <div id="modalDetailKlaim" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border-t-4 border-orange relative">
             <button onclick="closeModal('modalDetailKlaim')" class="absolute top-4 right-4 text-gray-400 hover:text-navy text-xl"><i class="fa-solid fa-xmark"></i></button>
             <h3 class="text-lg md:text-xl font-extrabold text-navy mb-1"><i class="fa-solid fa-users text-orange mr-2"></i> Daftar Klaim Kode: <span id="detailKodeTitle" class="text-teal"></span></h3>
-            <p class="text-xs text-gray-500 mb-4">Daftar pelanggan lengkap dengan ID token unik masing-masing.</p>
-            
-            <div class="max-h-60 overflow-y-auto border rounded-xl">
+            <div class="max-h-60 overflow-y-auto border rounded-xl mt-4">
                 <table class="w-full text-left text-xs min-w-[450px]">
                     <thead class="bg-gray-100 text-gray-600">
-                        <tr>
-                            <th class="p-2.5">Waktu</th>
-                            <th class="p-2.5">Nama</th>
-                            <th class="p-2.5">ID Token Unik</th>
-                            <th class="p-2.5">WhatsApp</th>
-                        </tr>
+                        <tr><th class="p-2.5">Waktu</th><th class="p-2.5">Nama</th><th class="p-2.5">Token</th><th class="p-2.5">WhatsApp</th></tr>
                     </thead>
-                    <tbody id="tableDetailKlaimBody">
-                        <tr><td colspan="4" class="p-4 text-center text-gray-400">Memuat data...</td></tr>
-                    </tbody>
+                    <tbody id="tableDetailKlaimBody"><tr><td colspan="4" class="p-4 text-center text-gray-400">Memuat...</td></tr></tbody>
                 </table>
-            </div>
-            <div class="flex justify-end pt-4 mt-4 border-t">
-                <button type="button" onclick="closeModal('modalDetailKlaim')" class="bg-navy text-white font-bold px-5 py-2 rounded-xl text-xs hover:bg-navy/80">Tutup</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL POP-UP: BUAT KODE KUPON -->
     <div id="modalKupon" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-t-4 border-orange relative">
             <button onclick="closeModal('modalKupon')" class="absolute top-4 right-4 text-gray-400 hover:text-navy text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg md:text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-ticket text-orange mr-2"></i> Buat Kode Redeem Baru</h3>
-            <p class="text-xs text-gray-500 mb-6">Tentukan kode promo, diskon, dan kuota maksimal.</p>
-            
+            <h3 class="text-lg font-extrabold text-navy mb-4">Buat Kupon Baru</h3>
             <form id="formPromo" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="col-span-2">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Nama Kode Promo</label>
-                        <input type="text" id="pCode" placeholder="Cth: KETIKBARU20" class="w-full border-2 border-gray-200 p-3 rounded-xl uppercase font-bold text-sm outline-none focus:border-orange bg-gray-50" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Diskon (%)</label>
-                        <input type="number" id="pDiskon" placeholder="Cth: 15" class="w-full border-2 border-gray-200 p-3 rounded-xl font-bold text-sm outline-none focus:border-orange bg-gray-50" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Maksimal Kuota (Orang)</label>
-                        <input type="number" id="pKuota" placeholder="Cth: 15" class="w-full border-2 border-gray-200 p-3 rounded-xl font-bold text-sm outline-none focus:border-orange bg-gray-50" required>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-3 pt-4 border-t">
-                    <button type="button" onclick="closeModal('modalKupon')" class="px-5 py-2.5 rounded-xl text-gray-500 font-bold text-sm hover:bg-gray-100">Batal</button>
-                    <button type="submit" id="btnSavePromo" class="bg-orange hover:bg-orange-600 text-white font-bold px-6 py-2.5 rounded-xl transition text-sm shadow-md">Simpan Kupon</button>
-                </div>
+                <input type="text" id="pCode" placeholder="Kode Promo (Cth: KETIKBARU)" class="w-full border-2 p-3 rounded-xl uppercase font-bold text-sm bg-gray-50" required>
+                <input type="number" id="pDiskon" placeholder="Diskon (%)" class="w-full border-2 p-3 rounded-xl text-sm bg-gray-50" required>
+                <input type="number" id="pKuota" placeholder="Maksimal Kuota Orang" class="w-full border-2 p-3 rounded-xl text-sm bg-gray-50" required>
+                <button type="submit" id="btnSavePromo" class="w-full bg-orange text-white font-bold py-3 rounded-xl text-sm">Simpan Kupon</button>
             </form>
             <p id="msgPromo" class="text-xs font-semibold mt-2 text-center"></p>
         </div>
     </div>
 
-    <!-- MODAL POP-UP: TAMBAH PESANAN TUGAS -->
     <div id="modalPesanan" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border-t-4 border-teal relative my-8">
             <button onclick="closeModal('modalPesanan')" class="absolute top-4 right-4 text-gray-400 hover:text-navy text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg md:text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-laptop-code text-teal mr-2"></i> Tambah Pesanan Tugas Baru</h3>
-            <p class="text-xs text-gray-500 mb-6">Catat tugas akademik atau joki baru.</p>
-            
+            <h3 class="text-lg font-extrabold text-navy mb-4">Tambah Pesanan Tugas Baru</h3>
             <form id="formOrder" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">ID Transaksi</label>
-                        <input type="text" id="oId" placeholder="TRX-003" class="w-full border-2 border-gray-200 p-3 rounded-xl uppercase font-bold text-sm outline-none focus:border-teal bg-gray-50" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Nama Klien</label>
-                        <input type="text" id="oNama" placeholder="Nama Klien" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-teal bg-gray-50" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">No WhatsApp Klien</label>
-                        <input type="tel" id="oWa" placeholder="081234567890" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-teal bg-gray-50" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Jenis Layanan Joki</label>
-                        <input type="text" id="oLayanan" placeholder="Laporan PKL / Makalah" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-teal bg-gray-50" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Biaya (Rp)</label>
-                        <input type="number" id="oBiaya" placeholder="50000" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-teal bg-gray-50" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Tenggat Waktu / Deadline</label>
-                        <input type="date" id="oTanggal" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-teal bg-gray-50" required>
-                    </div>
+                    <input type="text" id="oId" placeholder="ID Transaksi (Cth: TRX-001)" class="border-2 p-3 rounded-xl text-sm bg-gray-50 uppercase font-bold" required>
+                    <input type="text" id="oNama" placeholder="Nama Klien" class="border-2 p-3 rounded-xl text-sm bg-gray-50" required>
+                    <input type="tel" id="oWa" placeholder="No WhatsApp" class="border-2 p-3 rounded-xl text-sm bg-gray-50" required>
+                    <input type="text" id="oLayanan" placeholder="Jenis Layanan" class="border-2 p-3 rounded-xl text-sm bg-gray-50" required>
+                    <input type="number" id="oBiaya" placeholder="Biaya (Rp)" class="border-2 p-3 rounded-xl text-sm bg-gray-50" required>
+                    <input type="date" id="oTanggal" class="border-2 p-3 rounded-xl text-sm bg-gray-50" required>
                     <div class="col-span-2">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Status Pengerjaan</label>
-                        <select id="oStatus" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-teal bg-gray-50 font-semibold" required>
+                        <label class="block text-xs font-bold mb-1">Status Pengerjaan</label>
+                        <select id="oStatus" class="w-full border-2 p-3 rounded-xl text-sm bg-gray-50 font-semibold" required>
                             <optgroup label="Tahap Awal">
                                 <option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
                                 <option value="Masuk Antrean">Masuk Antrean</option>
@@ -327,35 +343,22 @@
                         </select>
                     </div>
                 </div>
-                <div class="flex justify-end gap-3 pt-4 border-t">
-                    <button type="button" onclick="closeModal('modalPesanan')" class="px-5 py-2.5 rounded-xl text-gray-500 font-bold text-sm hover:bg-gray-100">Batal</button>
-                    <button type="submit" id="btnSaveOrder" class="bg-teal hover:bg-teal-600 text-white font-bold px-6 py-2.5 rounded-xl transition text-sm shadow-md">Simpan Tugas</button>
-                </div>
+                <button type="submit" id="btnSaveOrder" class="w-full bg-teal text-white font-bold py-3 rounded-xl text-sm mt-4">Simpan Tugas</button>
             </form>
             <p id="msgOrder" class="text-xs font-semibold mt-2 text-center"></p>
         </div>
     </div>
 
-    <!-- MODAL POP-UP: TAMBAH PRODUK CUSTOM & MERCHANDISE -->
     <div id="modalProduk" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border-t-4 border-orange relative my-8">
             <button onclick="closeModal('modalProduk')" class="absolute top-4 right-4 text-gray-400 hover:text-navy text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg md:text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-box-open text-orange mr-2"></i> Tambah Pesanan Produk Baru</h3>
-            <p class="text-xs text-gray-500 mb-6">Catat pesanan stiker label, cetak foto, buku custom, atau top-up.</p>
-            
+            <h3 class="text-lg font-extrabold text-navy mb-4">Tambah Pesanan Produk Baru</h3>
             <form id="formProduk" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">ID Transaksi Produk</label>
-                        <input type="text" id="prodId" placeholder="PRD-001" class="w-full border-2 border-gray-200 p-3 rounded-xl uppercase font-bold text-sm outline-none focus:border-orange bg-gray-50" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Nama Pembeli</label>
-                        <input type="text" id="prodNama" placeholder="Nama Pembeli" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-orange bg-gray-50" required>
-                    </div>
+                    <input type="text" id="prodId" placeholder="ID Trx Produk (PRD-001)" class="border-2 p-3 rounded-xl text-sm bg-gray-50 uppercase font-bold" required>
+                    <input type="text" id="prodNama" placeholder="Nama Pembeli" class="border-2 p-3 rounded-xl text-sm bg-gray-50" required>
                     <div class="col-span-2">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Pilih Jenis Produk</label>
-                        <select id="prodItem" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-orange bg-gray-50 font-semibold" required>
+                        <select id="prodItem" class="w-full border-2 p-3 rounded-xl text-sm bg-gray-50 font-semibold" required>
                             <option value="Stiker Label Buku">Stiker Label Buku</option>
                             <option value="Cetak Foto / Polaroid">Cetak Foto / Polaroid</option>
                             <option value="Buku Custom / Jilid">Buku Custom / Jilid</option>
@@ -364,17 +367,10 @@
                             <option value="Top Up Diamond Game">Top Up Diamond Game</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Biaya (Rp)</label>
-                        <input type="number" id="prodBiaya" placeholder="15000" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-orange bg-gray-50" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Estimasi Selesai / Kirim</label>
-                        <input type="date" id="prodTanggal" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-orange bg-gray-50" required>
-                    </div>
+                    <input type="number" id="prodBiaya" placeholder="Biaya (Rp)" class="border-2 p-3 rounded-xl text-sm bg-gray-50" required>
+                    <input type="date" id="prodTanggal" class="border-2 p-3 rounded-xl text-sm bg-gray-50" required>
                     <div class="col-span-2">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Status Pengiriman / Cetak</label>
-                        <select id="prodStatus" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-orange bg-gray-50 font-semibold" required>
+                        <select id="prodStatus" class="w-full border-2 p-3 rounded-xl text-sm bg-gray-50 font-semibold" required>
                             <option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
                             <option value="Proses Pengerjaan">Proses Pengerjaan</option>
                             <option value="Selesai & Dikirim">Selesai & Dikirim</option>
@@ -382,67 +378,81 @@
                         </select>
                     </div>
                 </div>
-                <div class="flex justify-end gap-3 pt-4 border-t">
-                    <button type="button" onclick="closeModal('modalProduk')" class="px-5 py-2.5 rounded-xl text-gray-500 font-bold text-sm hover:bg-gray-100">Batal</button>
-                    <button type="submit" id="btnSaveProduk" class="bg-orange hover:bg-orange-600 text-white font-bold px-6 py-2.5 rounded-xl transition text-sm shadow-md">Simpan Produk</button>
-                </div>
+                <button type="submit" id="btnSaveProduk" class="w-full bg-orange text-white font-bold py-3 rounded-xl text-sm mt-4">Simpan Produk</button>
             </form>
             <p id="msgProduk" class="text-xs font-semibold mt-2 text-center"></p>
         </div>
     </div>
 
-    <!-- MODAL POP-UP: UPDATE STATUS TUGAS -->
     <div id="modalUpdate" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-t-4 border-navy relative my-8">
             <button onclick="closeModal('modalUpdate')" class="absolute top-4 right-4 text-gray-400 hover:text-navy text-xl"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-lg md:text-xl font-extrabold text-navy mb-2"><i class="fa-solid fa-gear text-navy mr-2"></i> Update Status Tugas</h3>
-            <p class="text-xs text-gray-500 mb-4">Ubah status atau deadline untuk ID: <span id="upTargetId" class="font-bold text-orange"></span></p>
-            
+            <h3 class="text-lg font-extrabold text-navy mb-2">Update Status ID: <span id="upTargetId" class="text-orange"></span></h3>
             <form id="formUpdate" class="space-y-4">
                 <input type="hidden" id="upIdTrx">
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Status Baru</label>
-                    <select id="upStatus" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-navy bg-gray-50 font-semibold" required>
-                        <optgroup label="Tahap Awal">
-                            <option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
-                            <option value="Masuk Antrean">Masuk Antrean</option>
-                            <option value="Menunggu Konfirmasi">Menunggu Konfirmasi</option>
-                        </optgroup>
-                        <optgroup label="Tahap Pengerjaan">
-                            <option value="Proses Pengerjaan">Proses Pengerjaan</option>
-                            <option value="Sedang Dikerjakan (50%)">Sedang Dikerjakan (50%)</option>
-                            <option value="Sedang Tahap Revisi">Sedang Tahap Revisi</option>
-                        </optgroup>
-                        <optgroup label="Tahap Selesai / Berhasil">
-                            <option value="Selesai & Dikirim">Selesai & Dikirim</option>
-                            <option value="Pembayaran Lunas">Pembayaran Lunas</option>
-                            <option value="Pesanan Sukses">Pesanan Sukses</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Biaya (Rp)</label>
-                    <input type="number" id="upBiaya" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-navy bg-gray-50" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Tenggat Waktu / Deadline</label>
-                    <input type="date" id="upTanggal" class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-navy bg-gray-50" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Catatan Progres</label>
-                    <input type="text" id="upNote" placeholder="Cth: Tugas sudah direvisi sesuai catatan..." class="w-full border-2 border-gray-200 p-3 rounded-xl text-sm outline-none focus:border-navy bg-gray-50">
-                </div>
-                <div class="flex justify-end gap-3 pt-4 border-t">
-                    <button type="button" onclick="closeModal('modalUpdate')" class="px-5 py-2.5 rounded-xl text-gray-500 font-bold text-sm hover:bg-gray-100">Batal</button>
-                    <button type="submit" id="btnUpdateOrder" class="bg-navy hover:bg-navy-800 text-white font-bold px-6 py-2.5 rounded-xl transition text-sm shadow-md">Simpan Perubahan</button>
-                </div>
+                <select id="upStatus" class="w-full border-2 p-3 rounded-xl text-sm bg-gray-50 font-semibold" required>
+                    <optgroup label="Tahap Awal">
+                        <option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
+                        <option value="Masuk Antrean">Masuk Antrean</option>
+                        <option value="Menunggu Konfirmasi">Menunggu Konfirmasi</option>
+                    </optgroup>
+                    <optgroup label="Tahap Pengerjaan">
+                        <option value="Proses Pengerjaan">Proses Pengerjaan</option>
+                        <option value="Sedang Dikerjakan (50%)">Sedang Dikerjakan (50%)</option>
+                        <option value="Sedang Tahap Revisi">Sedang Tahap Revisi</option>
+                    </optgroup>
+                    <optgroup label="Tahap Selesai / Berhasil">
+                        <option value="Selesai & Dikirim">Selesai & Dikirim</option>
+                        <option value="Pembayaran Lunas">Pembayaran Lunas</option>
+                        <option value="Pesanan Sukses">Pesanan Sukses</option>
+                    </optgroup>
+                </select>
+                <input type="number" id="upBiaya" class="w-full border-2 p-3 rounded-xl text-sm bg-gray-50" required>
+                <input type="date" id="upTanggal" class="w-full border-2 p-3 rounded-xl text-sm bg-gray-50" required>
+                <input type="text" id="upNote" placeholder="Catatan Progres..." class="w-full border-2 p-3 rounded-xl text-sm bg-gray-50">
+                <button type="submit" id="btnUpdateOrder" class="w-full bg-navy text-white font-bold py-3 rounded-xl text-sm">Simpan Perubahan</button>
             </form>
             <p id="msgUpdate" class="text-xs font-semibold mt-2 text-center"></p>
         </div>
     </div>
 
-    <!-- JAVASCRIPT KONTROL ADMIN -->
+    <!-- SCRIPT KONTROL ADMIN & LOGIN -->
     <script>
+        const CORRECT_USER = "ketiksolusi1404";
+        const CORRECT_PASS = "IqraInformatika2025*_";
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let isAuth = sessionStorage.getItem("ketik_solusi_auth");
+            if (isAuth === "true") {
+                document.getElementById('loginModal').classList.add('hidden');
+                loadAllData();
+                muatProfilAdmin();
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('formLoginAdmin').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let uInput = document.getElementById('loginUser').value.trim();
+            let pInput = document.getElementById('loginPass').value.trim();
+            let errElem = document.getElementById('loginError');
+
+            if (uInput === CORRECT_USER && pInput === CORRECT_PASS) {
+                sessionStorage.setItem("ketik_solusi_auth", "true");
+                document.getElementById('loginModal').classList.add('hidden');
+                loadAllData();
+                muatProfilAdmin();
+            } else {
+                errElem.innerText = "Username atau Password salah!";
+            }
+        });
+
+        function logoutAdmin() {
+            sessionStorage.removeItem("ketik_solusi_auth");
+            window.location.href = "index.html";
+        }
+
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyTtHtmxb-ZoogjkjkItRw0vKiz4LmoE2D7ZsLyL16XAtf2GzMncBTyzK2vLUttxvZM/exec";
 
         function openModal(modalId) { document.getElementById(modalId).classList.remove('hidden'); }
@@ -460,15 +470,15 @@
             document.getElementById('viewPesanan').classList.add('hidden');
             document.getElementById('viewProduk').classList.add('hidden');
             document.getElementById('viewKupon').classList.add('hidden');
+            document.getElementById('viewPengaturan').classList.add('hidden');
 
             document.getElementById('navRingkasan').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm";
             document.getElementById('navPesanan').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm";
             document.getElementById('navProduk').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm";
             document.getElementById('navKupon').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm";
+            document.getElementById('navPengaturan').className = "w-full flex items-center gap-3 text-gray-300 hover:bg-gray-800 p-3 rounded-xl transition text-left text-sm";
 
-            if (window.innerWidth < 768) {
-                toggleMobileSidebar();
-            }
+            if (window.innerWidth < 768) toggleMobileSidebar();
 
             if (tab === 'ringkasan') {
                 document.getElementById('viewRingkasan').classList.remove('hidden');
@@ -490,69 +500,79 @@
                 document.getElementById('navKupon').className = "w-full flex items-center gap-3 bg-teal text-white p-3 rounded-xl font-bold transition text-left text-sm";
                 document.getElementById('pageTitle').innerText = "Buat & Atur Kode Kupon";
                 loadKuponData();
+            } else if (tab === 'pengaturan') {
+                document.getElementById('viewPengaturan').classList.remove('hidden');
+                document.getElementById('navPengaturan').className = "w-full flex items-center gap-3 bg-teal text-white p-3 rounded-xl font-bold transition text-left text-sm";
+                document.getElementById('pageTitle').innerText = "Pengaturan Profil Admin";
+                muatProfilAdmin();
             }
         }
 
-        // FUNGSI CEK DEADLINE TUGAS
+        function muatProfilAdmin() {
+            let savedNama = localStorage.getItem("admin_nama") || "Iqra";
+            let savedIdentitas = localStorage.getItem("admin_identitas") || "D0225015 - Informatika";
+            let savedFoto = localStorage.getItem("admin_foto") || "https://via.placeholder.com/100";
+
+            document.getElementById('adminNama').value = savedNama;
+            document.getElementById('adminIdentitas').value = savedIdentitas;
+            document.getElementById('adminFoto').value = savedFoto;
+            document.getElementById('previewFoto').src = savedFoto;
+
+            document.getElementById('displayAdminNama').innerText = savedNama;
+            document.getElementById('displayAdminIdentitas').innerText = savedIdentitas;
+            document.getElementById('displayAdminFoto').src = savedFoto;
+        }
+
+        document.getElementById('formAdminProfile').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let namaBaru = document.getElementById('adminNama').value.trim();
+            let identitasBaru = document.getElementById('adminIdentitas').value.trim();
+            let fotoBaru = document.getElementById('adminFoto').value.trim();
+            let msg = document.getElementById('msgProfil');
+
+            localStorage.setItem("admin_nama", namaBaru);
+            localStorage.setItem("admin_identitas", identitasBaru);
+            localStorage.setItem("admin_foto", fotoBaru);
+
+            document.getElementById('previewFoto').src = fotoBaru;
+            muatProfilAdmin();
+
+            msg.innerText = "✔ Profil admin berhasil diperbarui!";
+            msg.className = "text-xs font-bold text-green-600 mt-3 text-center";
+            setTimeout(() => { msg.innerText = ""; }, 3000);
+        });
+
         function processBottomDeadlines(pesananData) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-
             let urgentList = [];
 
             pesananData.forEach(row => {
                 const statusText = (row.status || "").toLowerCase();
                 const isFinished = statusText.includes('selesai') || statusText.includes('lunas') || statusText.includes('sukses');
-                
                 if (!isFinished && row.tanggal) {
                     const deadlineDate = new Date(row.tanggal);
                     deadlineDate.setHours(0, 0, 0, 0);
-
-                    const diffTime = deadlineDate - today;
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const diffDays = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
 
                     if (diffDays <= 1) {
-                        let ket = "";
-                        let badgeClass = "";
-                        if (diffDays < 0) {
-                            ket = "Terlewat (Deadline!)";
-                            badgeClass = "bg-red-100 text-red-700 font-bold";
-                        } else if (diffDays === 0) {
-                            ket = "Hari Ini!";
-                            badgeClass = "bg-orange-100 text-orange font-bold";
-                        } else {
-                            ket = "Besok (H-1)";
-                            badgeClass = "bg-yellow-100 text-yellow-800 font-bold";
-                        }
-
-                        urgentList.push({
-                            id: row.id_trx,
-                            nama: row.nama,
-                            layanan: row.layanan,
-                            tanggal: row.tanggal,
-                            keterangan: ket,
-                            badge: badgeClass
-                        });
+                        let ket = diffDays < 0 ? "Terlewat (Deadline!)" : (diffDays === 0 ? "Hari Ini!" : "Besok (H-1)");
+                        let badgeClass = diffDays < 0 ? "bg-red-100 text-red-700 font-bold" : "bg-orange-100 text-orange font-bold";
+                        urgentList.push({ id: row.id_trx, nama: row.nama, layanan: row.layanan, tanggal: row.tanggal, keterangan: ket, badge: badgeClass });
                     }
                 }
             });
 
             const countBadge = document.getElementById('notifCountBadge');
             const bottomList = document.getElementById('bottomNotifList');
-
             if (urgentList.length > 0) {
                 countBadge.innerText = urgentList.length + " Perhatian";
                 let html = "";
                 urgentList.forEach(item => {
-                    html += `
-                        <div class="p-3 bg-white border-l-4 border-red-500 rounded-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                            <div>
-                                <span class="font-bold text-navy">${item.id} - ${item.nama}</span> <span class="text-gray-500">(${item.layanan})</span>
-                                <p class="text-gray-500 text-[11px] mt-0.5">Deadline: <b>${item.tanggal}</b></p>
-                            </div>
-                            <span class="${item.badge} px-2.5 py-1 rounded text-[10px] whitespace-nowrap">${item.keterangan}</span>
-                        </div>
-                    `;
+                    html += `<div class="p-3 bg-white border-l-4 border-red-500 rounded-lg shadow-sm flex justify-between items-center">
+                        <div><span class="font-bold text-navy">${item.id} - ${item.nama}</span> (${item.layanan})<p class="text-gray-500 text-[11px]">Deadline: <b>${item.tanggal}</b></p></div>
+                        <span class="${item.badge} px-2.5 py-1 rounded text-[10px]">${item.keterangan}</span>
+                    </div>`;
                 });
                 bottomList.innerHTML = html;
             } else {
@@ -574,23 +594,16 @@
                     dataKlaim.reverse().forEach(row => {
                         let waClean = String(row.whatsapp || "").replace(/^0/, '');
                         let uniqueToken = row.token || "-";
-                        
-                        let waMessage = `Halo Kak ${row.nama},\n\nTerima kasih telah mengklaim kode promo *${row.kode}* di *Ketik Solusi*.\n\nBerikut adalah *ID Token Unik* diskon Anda:\n🎟️ *Token:* \`${uniqueToken}\`\n\nSilakan tunjukkan token ini saat melakukan pemesanan ya. Terima kasih!`;
+                        let waMessage = `Halo Kak ${row.nama},\n\nTerima kasih telah mengklaim kode promo *${row.kode}*.\n\nID Token Unik Anda: \`${uniqueToken}\`\n\nSilakan tunjukkan token ini saat order ya!`;
                         let waLink = `https://wa.me/62${waClean}?text=${encodeURIComponent(waMessage)}`;
 
-                        html += `
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-4 text-xs text-gray-500 whitespace-nowrap">${row.timestamp}</td>
-                                <td class="p-4 font-bold text-navy"><span class="bg-orange/10 text-orange px-2 py-1 rounded text-xs">${row.kode}</span></td>
-                                <td class="p-4 font-mono font-bold text-teal bg-teal/5 rounded">${uniqueToken}</td>
-                                <td class="p-4 font-semibold">${row.nama}</td>
-                                <td class="p-4">
-                                    <a href="${waLink}" target="_blank" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5 text-xs font-bold whitespace-nowrap">
-                                        <i class="fa-brands fa-whatsapp text-green-600 text-sm"></i> Kirim WA (${row.whatsapp})
-                                    </a>
-                                </td>
-                            </tr>
-                        `;
+                        html += `<tr class="border-b hover:bg-gray-50">
+                            <td class="p-4 text-xs text-gray-500">${row.timestamp}</td>
+                            <td class="p-4 font-bold text-navy"><span class="bg-orange/10 text-orange px-2 py-1 rounded text-xs">${row.kode}</span></td>
+                            <td class="p-4 font-mono font-bold text-teal bg-teal/5 rounded">${uniqueToken}</td>
+                            <td class="p-4 font-semibold">${row.nama}</td>
+                            <td class="p-4"><a href="${waLink}" target="_blank" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg text-xs font-bold inline-flex items-center gap-1"><i class="fa-brands fa-whatsapp text-green-600"></i> Kirim WA (${row.whatsapp})</a></td>
+                        </tr>`;
                     });
                 }
                 document.getElementById('tableLogBody').innerHTML = html;
@@ -599,8 +612,7 @@
                 const dataPesanan = await resPesanan.json();
                 document.getElementById('statPesanan').innerText = dataPesanan.length;
 
-                let belumSelesaiCount = 0;
-                let totalPendapatan = 0;
+                let belumSelesaiCount = 0, totalPendapatan = 0;
                 dataPesanan.forEach(row => {
                     const s = (row.status || "").toLowerCase();
                     if(s.includes('selesai') || s.includes('lunas') || s.includes('sukses')) {
@@ -611,9 +623,7 @@
                 });
                 document.getElementById('statBelumSelesai').innerText = belumSelesaiCount;
                 document.getElementById('statPendapatan').innerText = "Rp " + totalPendapatan.toLocaleString('id-ID');
-
                 processBottomDeadlines(dataPesanan);
-
             } catch (err) { console.error("Gagal memuat data", err); }
         }
 
@@ -621,12 +631,9 @@
             try {
                 const res = await fetch(WEB_APP_URL + "?type=pesanan");
                 const data = await res.json();
-                
                 document.getElementById('statPesanan').innerText = data.length;
-                let totalPendapatan = 0;
-                let belumSelesaiCount = 0;
+                let totalPendapatan = 0, belumSelesaiCount = 0, html = "";
 
-                let html = "";
                 if(data.length === 0) {
                     html = `<tr><td colspan="7" class="p-4 text-center text-gray-400">Belum ada pesanan tugas terdaftar.</td></tr>`;
                 } else {
@@ -637,142 +644,103 @@
                         } else {
                             belumSelesaiCount++;
                         }
-
                         let waClean = String(row.whatsapp || "").replace(/^0/, '');
-                        let textWa = `Halo Kak ${row.nama},\n\nBerikut informasi status tugas Anda di *Ketik Solusi*:\n\n🆔 *ID Transaksi:* ${row.id_trx}\n📚 *Layanan:* ${row.layanan}\n📌 *Status:* ${row.status}\n⏰ *Deadline:* ${row.tanggal || '-'}\n\nSilakan cek progres secara berkala melalui website kami di:\nhttps://ketiksolusi.github.io/website1/\n\nTerima kasih!`;
+                        let textWa = `Halo Kak ${row.nama},\n\nStatus tugas Anda:\n🆔 ${row.id_trx}\n📚 ${row.layanan}\n📌 ${row.status}\n⏰ Deadline: ${row.tanggal || '-'}\n\nCek berkala di: https://ketiksolusi.github.io/website1/`;
                         let linkWa = `https://wa.me/62${waClean}?text=${encodeURIComponent(textWa)}`;
 
-                        html += `
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-3 font-bold text-navy whitespace-nowrap">${row.id_trx}</td>
-                                <td class="p-3">${row.nama}</td>
-                                <td class="p-3">${row.layanan}</td>
-                                <td class="p-3 font-semibold text-green-600 whitespace-nowrap">Rp ${Number(row.biaya || 0).toLocaleString('id-ID')}</td>
-                                <td class="p-3"><span class="bg-teal/10 text-teal px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap">${row.status}</span></td>
-                                <td class="p-3 text-center">
-                                    <a href="${linkWa}" target="_blank" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1 text-xs font-bold whitespace-nowrap">
-                                        <i class="fa-brands fa-whatsapp text-green-600"></i> Chat WA
-                                    </a>
-                                </td>
-                                <td class="p-3 text-center">
-                                    <button onclick="openUpdateModal('${row.id_trx}', '${row.biaya}', '${row.status}', '${row.tanggal || ''}')" class="bg-gray-100 hover:bg-navy hover:text-white text-navy p-2 rounded-lg transition shadow-sm" title="Edit / Update Status">
-                                        <i class="fa-solid fa-gear"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
+                        html += `<tr class="border-b hover:bg-gray-50">
+                            <td class="p-3 font-bold text-navy">${row.id_trx}</td>
+                            <td class="p-3">${row.nama}</td>
+                            <td class="p-3">${row.layanan}</td>
+                            <td class="p-3 font-semibold text-green-600">Rp ${Number(row.biaya || 0).toLocaleString('id-ID')}</td>
+                            <td class="p-3"><span class="bg-teal/10 text-teal px-2.5 py-1 rounded-full text-xs font-bold">${row.status}</span></td>
+                            <td class="p-3 text-center"><a href="${linkWa}" target="_blank" class="bg-green-100 text-green-700 hover:bg-green-200 px-3 py-1.5 rounded-lg text-xs font-bold inline-flex items-center gap-1"><i class="fa-brands fa-whatsapp"></i> Chat WA</a></td>
+                            <td class="p-3 text-center"><button onclick="openUpdateModal('${row.id_trx}', '${row.biaya}', '${row.status}', '${row.tanggal || ''}')" class="bg-gray-100 hover:bg-navy hover:text-white text-navy p-2 rounded-lg transition"><i class="fa-solid fa-gear"></i></button></td>
+                        </tr>`;
                     });
                 }
                 document.getElementById('statPendapatan').innerText = "Rp " + totalPendapatan.toLocaleString('id-ID');
                 document.getElementById('statBelumSelesai').innerText = belumSelesaiCount;
                 document.getElementById('tablePesananBody').innerHTML = html;
-            } catch (err) { console.error("Gagal memuat pesanan tugas"); }
+            } catch (err) { console.error("Gagal memuat pesanan"); }
         }
 
         async function loadProdukData() {
             try {
                 const res = await fetch(WEB_APP_URL + "?type=pesanan");
                 const data = await res.json();
-                
                 const produkList = data.filter(row => {
                     const l = (row.layanan || "").toLowerCase();
                     return l.includes('stiker') || l.includes('foto') || l.includes('buku') || l.includes('gantungan') || l.includes('tumbler') || l.includes('top up') || l.includes('diamond');
                 });
-
                 let html = "";
                 if(produkList.length === 0) {
-                    html = `<tr><td colspan="6" class="p-4 text-center text-gray-400">Belum ada pesanan produk / merchandise.</td></tr>`;
+                    html = `<tr><td colspan="6" class="p-4 text-center text-gray-400">Belum ada pesanan produk.</td></tr>`;
                 } else {
                     produkList.forEach(row => {
-                        html += `
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-3 font-bold text-navy whitespace-nowrap">${row.id_trx}</td>
-                                <td class="p-3">${row.nama}</td>
-                                <td class="p-3 font-semibold text-orange">${row.layanan}</td>
-                                <td class="p-3 font-semibold text-green-600 whitespace-nowrap">Rp ${Number(row.biaya || 0).toLocaleString('id-ID')}</td>
-                                <td class="p-3"><span class="bg-orange/10 text-orange px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap">${row.status}</span></td>
-                                <td class="p-3 text-center">
-                                    <button onclick="openUpdateModal('${row.id_trx}', '${row.biaya}', '${row.status}', '${row.tanggal || ''}')" class="bg-gray-100 hover:bg-navy hover:text-white text-navy p-2 rounded-lg transition shadow-sm" title="Edit Status Produk">
-                                        <i class="fa-solid fa-gear"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
+                        html += `<tr class="border-b hover:bg-gray-50">
+                            <td class="p-3 font-bold text-navy">${row.id_trx}</td>
+                            <td class="p-3">${row.nama}</td>
+                            <td class="p-3 font-semibold text-orange">${row.layanan}</td>
+                            <td class="p-3 font-semibold text-green-600">Rp ${Number(row.biaya || 0).toLocaleString('id-ID')}</td>
+                            <td class="p-3"><span class="bg-orange/10 text-orange px-2.5 py-1 rounded-full text-xs font-bold">${row.status}</span></td>
+                            <td class="p-3 text-center"><button onclick="openUpdateModal('${row.id_trx}', '${row.biaya}', '${row.status}', '${row.tanggal || ''}')" class="bg-gray-100 hover:bg-navy hover:text-white text-navy p-2 rounded-lg transition"><i class="fa-solid fa-gear"></i></button></td>
+                        </tr>`;
                     });
                 }
                 document.getElementById('tableProdukBody').innerHTML = html;
-            } catch (err) { console.error("Gagal memuat produk"); }
+            } catch (err) { console.error("Gagal produk"); }
         }
 
         async function loadKuponData() {
             try {
                 const res = await fetch(WEB_APP_URL + "?type=promo");
                 const data = await res.json();
-
                 let html = "";
                 if(data.length === 0) {
-                    html = `<tr><td colspan="5" class="p-4 text-center text-gray-400">Belum ada kode kupon dibuat.</td></tr>`;
+                    html = `<tr><td colspan="5" class="p-4 text-center text-gray-400">Belum ada kupon.</td></tr>`;
                 } else {
                     data.forEach(row => {
-                        html += `
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-3 font-bold text-navy whitespace-nowrap"><span class="bg-orange/10 text-orange px-2 py-1 rounded text-xs">${row.kode}</span></td>
-                                <td class="p-3 font-semibold">${row.diskon}%</td>
-                                <td class="p-3 whitespace-nowrap">${row.terpakai} / ${row.kuota} orang</td>
-                                <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${row.status === 'AKTIF' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${row.status}</span></td>
-                                <td class="p-3 text-center">
-                                    <button onclick="showDetailKlaim('${row.kode}')" class="bg-teal/10 hover:bg-teal hover:text-white text-teal px-3 py-1.5 rounded-lg transition text-xs font-bold flex items-center justify-center gap-1 mx-auto whitespace-nowrap">
-                                        <i class="fa-solid fa-eye"></i> Lihat Klaim
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
+                        html += `<tr class="border-b hover:bg-gray-50">
+                            <td class="p-3 font-bold text-navy"><span class="bg-orange/10 text-orange px-2 py-1 rounded text-xs">${row.kode}</span></td>
+                            <td class="p-3 font-semibold">${row.diskon}%</td>
+                            <td class="p-3">${row.terpakai} / ${row.kuota} orang</td>
+                            <td class="p-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${row.status === 'AKTIF' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${row.status}</span></td>
+                            <td class="p-3 text-center"><button onclick="showDetailKlaim('${row.kode}')" class="bg-teal/10 hover:bg-teal hover:text-white text-teal px-3 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-eye"></i> Lihat Klaim</button></td>
+                        </tr>`;
                     });
                 }
                 document.getElementById('tableKuponBody').innerHTML = html;
-            } catch (err) { console.error("Gagal memuat kupon"); }
+            } catch (err) { console.error("Gagal kupon"); }
         }
 
         async function showDetailKlaim(kodePromo) {
             document.getElementById('detailKodeTitle').innerText = kodePromo;
             const tbody = document.getElementById('tableDetailKlaimBody');
-            tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Memuat data klaim...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Memuat...</td></tr>`;
             openModal('modalDetailKlaim');
-
             try {
                 const res = await fetch(WEB_APP_URL);
-                const dataKlaim = await res.json();
-                
-                const filtered = dataKlaim.filter(item => String(item.kode).toUpperCase() === String(kodePromo).toUpperCase());
-
+                const data = await res.json();
+                const filtered = data.filter(item => String(item.kode).toUpperCase() === String(kodePromo).toUpperCase());
                 let html = "";
                 if(filtered.length === 0) {
-                    html = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Belum ada yang mengklaim kode ini.</td></tr>`;
+                    html = `<tr><td colspan="4" class="p-4 text-center text-gray-400">Belum ada yang klaim.</td></tr>`;
                 } else {
                     filtered.forEach(item => {
                         let waClean = String(item.whatsapp || "").replace(/^0/, '');
-                        let uniqueToken = item.token || "-";
-                        let waMessage = `Halo Kak ${item.nama},\n\nTerima kasih telah mengklaim kode promo *${item.kode}*.\n\nID Token Unik Anda: \`${uniqueToken}\`\n\nSilakan gunakan token ini saat order di website kami ya!`;
-                        let waLink = `https://wa.me/62${waClean}?text=${encodeURIComponent(waMessage)}`;
-
-                        html += `
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="p-2.5 text-gray-500 whitespace-nowrap">${item.timestamp}</td>
-                                <td class="p-2.5 font-semibold text-navy">${item.nama}</td>
-                                <td class="p-2.5 font-mono font-bold text-teal">${uniqueToken}</td>
-                                <td class="p-2.5">
-                                    <a href="${waLink}" target="_blank" class="text-green-600 font-bold hover:underline text-xs bg-green-50 px-2 py-1 rounded inline-flex items-center gap-1 whitespace-nowrap">
-                                        <i class="fa-brands fa-whatsapp"></i> ${item.whatsapp}
-                                    </a>
-                                </td>
-                            </tr>
-                        `;
+                        let waMsg = `Halo Kak ${item.nama}, Token Anda: ${item.token}`;
+                        let waLink = `https://wa.me/62${waClean}?text=${encodeURIComponent(waMsg)}`;
+                        html += `<tr class="border-b">
+                            <td class="p-2.5 text-gray-500">${item.timestamp}</td>
+                            <td class="p-2.5 font-semibold">${item.nama}</td>
+                            <td class="p-2.5 font-mono text-teal font-bold">${item.token}</td>
+                            <td class="p-2.5"><a href="${waLink}" target="_blank" class="text-green-600 font-bold text-xs"><i class="fa-brands fa-whatsapp"></i> ${item.whatsapp}</a></td>
+                        </tr>`;
                     });
                 }
                 tbody.innerHTML = html;
-            } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500">Gagal memuat detail klaim.</td></tr>`;
-            }
+            } catch (e) { tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-500">Gagal memuat.</td></tr>`; }
         }
 
         function openUpdateModal(id, biaya, status, tanggal) {
@@ -780,137 +748,49 @@
             document.getElementById('upIdTrx').value = id;
             document.getElementById('upBiaya').value = biaya;
             document.getElementById('upStatus').value = status;
-            
-            if (tanggal && tanggal !== "undefined" && tanggal !== "null") {
-                let formattedDate = tanggal.split('T')[0];
-                document.getElementById('upTanggal').value = formattedDate;
-            } else {
-                document.getElementById('upTanggal').value = "";
-            }
-
+            document.getElementById('upTanggal').value = (tanggal && tanggal !== "undefined") ? tanggal.split('T')[0] : "";
             openModal('modalUpdate');
         }
 
         document.getElementById('formPromo').addEventListener('submit', async function(e) {
             e.preventDefault();
             const msg = document.getElementById('msgPromo');
-            const btn = document.getElementById('btnSavePromo');
-            msg.innerText = "Menyimpan..."; btn.disabled = true;
-
-            try {
-                const res = await fetch(WEB_APP_URL, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        action: "buat_kode",
-                        kode: document.getElementById('pCode').value.trim(),
-                        diskon: document.getElementById('pDiskon').value,
-                        kuota: document.getElementById('pKuota').value
-                    })
-                });
-                const json = await res.json();
-                if(json.status === "success") {
-                    msg.innerText = "✔ " + json.message;
-                    msg.className = "text-xs font-bold text-green-600 mt-2 text-center";
-                    document.getElementById('formPromo').reset();
-                    setTimeout(() => { closeModal('modalKupon'); loadKuponData(); }, 1000);
-                } else { msg.innerText = "✖ " + json.message; msg.className = "text-xs font-bold text-red-500 mt-2 text-center"; }
-            } catch (err) { msg.innerText = "Gagal terhubung."; }
-            btn.disabled = false;
+            msg.innerText = "Menyimpan...";
+            let res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "buat_kode", kode: document.getElementById('pCode').value.trim(), diskon: document.getElementById('pDiskon').value, kuota: document.getElementById('pKuota').value }) });
+            let json = await res.json();
+            msg.innerText = json.status === "success" ? "✔ Berhasil" : "✖ Gagal";
+            if(json.status === "success") { setTimeout(() => { closeModal('modalKupon'); loadKuponData(); }, 1000); }
         });
 
         document.getElementById('formOrder').addEventListener('submit', async function(e) {
             e.preventDefault();
             const msg = document.getElementById('msgOrder');
-            const btn = document.getElementById('btnSaveOrder');
-            msg.innerText = "Menyimpan..."; btn.disabled = true;
-
-            try {
-                const res = await fetch(WEB_APP_URL, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        action: "tambah_pesanan",
-                        id_trx: document.getElementById('oId').value.trim(),
-                        nama_klien: document.getElementById('oNama').value.trim(),
-                        whatsapp: document.getElementById('oWa').value.trim(),
-                        layanan: document.getElementById('oLayanan').value.trim(),
-                        biaya: document.getElementById('oBiaya').value,
-                        status: document.getElementById('oStatus').value,
-                        tanggal: document.getElementById('oTanggal').value,
-                        keterangan: "Tugas dicatat oleh Admin"
-                    })
-                });
-                const json = await res.json();
-                if(json.status === "success") {
-                    msg.innerText = "✔ " + json.message;
-                    msg.className = "text-xs font-bold text-green-600 mt-2 text-center";
-                    document.getElementById('formOrder').reset();
-                    setTimeout(() => { closeModal('modalPesanan'); loadPesananData(); }, 1000);
-                } else { msg.innerText = "✖ " + json.message; msg.className = "text-xs font-bold text-red-500 mt-2 text-center"; }
-            } catch (err) { msg.innerText = "Gagal terhubung."; }
-            btn.disabled = false;
+            msg.innerText = "Menyimpan...";
+            let res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "tambah_pesanan", id_trx: document.getElementById('oId').value.trim(), nama_klien: document.getElementById('oNama').value.trim(), whatsapp: document.getElementById('oWa').value.trim(), layanan: document.getElementById('oLayanan').value.trim(), biaya: document.getElementById('oBiaya').value, status: document.getElementById('oStatus').value, tanggal: document.getElementById('oTanggal').value, keterangan: "Admin" }) });
+            let json = await res.json();
+            msg.innerText = json.status === "success" ? "✔ Berhasil" : "✖ Gagal";
+            if(json.status === "success") { setTimeout(() => { closeModal('modalPesanan'); loadPesananData(); }, 1000); }
         });
 
         document.getElementById('formProduk').addEventListener('submit', async function(e) {
             e.preventDefault();
             const msg = document.getElementById('msgProduk');
-            const btn = document.getElementById('btnSaveProduk');
-            msg.innerText = "Menyimpan..."; btn.disabled = true;
-
-            try {
-                const res = await fetch(WEB_APP_URL, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        action: "tambah_pesanan",
-                        id_trx: document.getElementById('prodId').value.trim(),
-                        nama_klien: document.getElementById('prodNama').value.trim(),
-                        whatsapp: "-",
-                        layanan: document.getElementById('prodItem').value,
-                        biaya: document.getElementById('prodBiaya').value,
-                        status: document.getElementById('prodStatus').value,
-                        tanggal: document.getElementById('prodTanggal').value,
-                        keterangan: "Produk dicatat oleh Admin"
-                    })
-                });
-                const json = await res.json();
-                if(json.status === "success") {
-                    msg.innerText = "✔ " + json.message;
-                    msg.className = "text-xs font-bold text-green-600 mt-2 text-center";
-                    document.getElementById('formProduk').reset();
-                    setTimeout(() => { closeModal('modalProduk'); loadProdukData(); }, 1000);
-                } else { msg.innerText = "✖ " + json.message; msg.className = "text-xs font-bold text-red-500 mt-2 text-center"; }
-            } catch (err) { msg.innerText = "Gagal terhubung."; }
-            btn.disabled = false;
+            msg.innerText = "Menyimpan...";
+            let res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "tambah_pesanan", id_trx: document.getElementById('prodId').value.trim(), nama_klien: document.getElementById('prodNama').value.trim(), whatsapp: "-", layanan: document.getElementById('prodItem').value, biaya: document.getElementById('prodBiaya').value, status: document.getElementById('prodStatus').value, tanggal: document.getElementById('prodTanggal').value, keterangan: "Admin Produk" }) });
+            let json = await res.json();
+            msg.innerText = json.status === "success" ? "✔ Berhasil" : "✖ Gagal";
+            if(json.status === "success") { setTimeout(() => { closeModal('modalProduk'); loadProdukData(); }, 1000); }
         });
 
         document.getElementById('formUpdate').addEventListener('submit', async function(e) {
             e.preventDefault();
             const msg = document.getElementById('msgUpdate');
-            const btn = document.getElementById('btnUpdateOrder');
-            msg.innerText = "Memperbarui..."; btn.disabled = true;
-
-            try {
-                const res = await fetch(WEB_APP_URL, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        action: "update_pesanan",
-                        id_trx: document.getElementById('upIdTrx').value,
-                        status_baru: document.getElementById('upStatus').value,
-                        biaya_baru: document.getElementById('upBiaya').value,
-                        tanggal_baru: document.getElementById('upTanggal').value,
-                        keterangan: document.getElementById('upNote').value || "Status diperbarui oleh Admin"
-                    })
-                });
-                const json = await res.json();
-                if(json.status === "success") {
-                    msg.innerText = "✔ Berhasil diupdate!";
-                    msg.className = "text-xs font-bold text-green-600 mt-2 text-center";
-                    setTimeout(() => { closeModal('modalUpdate'); loadPesananData(); loadProdukData(); }, 1000);
-                } else { msg.innerText = "✖ " + json.message; msg.className = "text-xs font-bold text-red-500 mt-2 text-center"; }
-            } catch (err) { msg.innerText = "Gagal terhubung."; }
-            btn.disabled = false;
+            msg.innerText = "Memperbarui...";
+            let res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "update_pesanan", id_trx: document.getElementById('upIdTrx').value, status_baru: document.getElementById('upStatus').value, biaya_baru: document.getElementById('upBiaya').value, tanggal_baru: document.getElementById('upTanggal').value, keterangan: document.getElementById('upNote').value || "Update" }) });
+            let json = await res.json();
+            msg.innerText = json.status === "success" ? "✔ Diupdate!" : "✖ Gagal";
+            if(json.status === "success") { setTimeout(() => { closeModal('modalUpdate'); loadPesananData(); loadProdukData(); }, 1000); }
         });
-
-        document.addEventListener("DOMContentLoaded", loadAllData);
     </script>
 </body>
 </html>
